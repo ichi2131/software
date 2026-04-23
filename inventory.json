@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "name": "Laptop Dell",
+    "quantity": 5,
+    "price": 800,
+    "category": "Electrónicos"
+  },
+  {
+    "id": 2,
+    "name": "Mouse Logitech",
+    "quantity": 50,
+    "price": 25,
+    "category": "Accesorios"
+  },
+  {
+    "id": 3,
+    "name": "Teclado Mecánico",
+    "quantity": 30,
+    "price": 120,
+    "category": "Accesorios"
+  },
+  {
+    "id": 4,
+    "name": "Monitor LG 27\"",
+    "quantity": 8,
+    "price": 300,
+    "category": "Electrónicos"
+  },
+  {
+    "id": 5,
+    "name": "Camiseta Negra",
+    "quantity": 100,
+    "price": 20,
+    "category": "Ropa"
+  },
+  {
+    "id": 6,
+    "name": "Pantalón Azul",
+    "quantity": 75,
+    "price": 40,
+    "category": "Ropa"
+  },
+  {
+    "id": 7,
+    "name": "Arroz Premium",
+    "quantity": 200,
+    "price": 2,
+    "category": "Alimentos"
+  },
+  {
+    "id": 8,
+    "name": "Aceite de Oliva",
+    "quantity": 50,
+    "price": 8,
+    "category": "Alimentos"
+  }
+]

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .section h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        input[type="text"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-family: var(--font-family);
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--border-color);
+            color: var(--text-color);
+        }
+
+        .btn-danger {
+            background-color: var(--delete-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: var(--delete-hover);
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .users-table thead {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .users-table th,
+        .users-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .users-table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .role-badge {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .role-admin {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        }
+
+        .role-tester {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a5a8 100%);
+        }
+
+        .role-tesorera {
+            background: linear-gradient(135deg, #ffa502 0%, #ff7b00 100%);
+        }
+
+        .role-buyer {
+            background: linear-gradient(135deg, #00c9a7 0%, #00a783 100%);
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+        }
+
+        .error-message {
+            background-color: var(--error-bg);
+            color: var(--error-text);
+        }
+
+        .info-box {
+            background-color: var(--bg-gradient-1);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .user-badge {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+
+        .logout-btn {
+            background: var(--delete-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        body {
+            position: relative;
+        }
+
+        nav {
+            display: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="user-info">
+        <span id="userName">Usuario</span>
+        <span id="userRole" class="user-badge">Rol</span>
+        <a href="index.html" class="home-btn" style="background: var(--primary-color); color: white; border: none; padding: 5px 10px; border-radius: var(--border-radius); cursor: pointer; font-size: 0.9em; text-decoration: none; display: inline-block;">🏠 Inicio</a>
+        <button class="logout-btn" onclick="handleLogout()">Salir</button>
+    </div>
+
+    <!-- Header será renderizado por JavaScript -->
+
+    <nav>
+        <a href="index.html">← Volver</a>
+    </nav>
+
+    <div class="admin-container">
+        <h1>👥 Gestión de Usuarios</h1>
+
+        <div id="successMessage" class="message success-message"></div>
+        <div id="errorMessage" class="message error-message"></div>
+
+        <!-- CREAR NUEVO USUARIO -->
+        <div class="section">
+            <h2>➕ Crear Nuevo Usuario</h2>
+
+            <div class="info-box">
+                <strong>Nota:</strong> Aquí puedes crear nuevas cuentas para otros roles (Admin, Inspector, Tesorera, Comprador).
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="newFullName">Nombre Completo:</label>
+                    <input type="text" id="newFullName" placeholder="Ej: Juan Pérez">
+                </div>
+
+                <div class="form-group">
+                    <label for="newUsername">Usuario:</label>
+                    <input type="text" id="newUsername" placeholder="Ej: juanperez">
+                </div>
+
+                <div class="form-group">
+                    <label for="newPassword">Contraseña:</label>
+                    <input type="password" id="newPassword" placeholder="Contraseña segura">
+                </div>
+
+                <div class="form-group">
+                    <label for="newRole">Tipo de Cuenta:</label>
+                    <select id="newRole">
+                        <option value="admin">Administrador</option>
+                        <option value="tester">Inspector</option>
+                        <option value="tesorera">Tesorera</option>
+                        <option value="buyer">Comprador</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="createNewUser()">✓ Crear Usuario</button>
+                <button class="btn btn-secondary" onclick="resetCreateForm()">🔄 Limpiar</button>
+            </div>
+        </div>
+
+        <!-- LISTA DE USUARIOS -->
+        <div class="section">
+            <h2>📋 Usuarios Registrados</h2>
+
+            <div id="usersTableContainer"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            const user = getCurrentUser();
+            document.getElementById('userName').textContent = user.fullName || user.username;
+            document.getElementById('userRole').textContent = user.role.toUpperCase();
+
+            // Renderizar header y footer
+            renderHeader();
+            renderFooter();
+
+            if (user.role !== 'admin') {
+                window.location.href = 'index.html';
+            }
+
+            loadUsers();
+        });
+
+        function loadUsers() {
+            const users = getAllUsers();
+            const container = document.getElementById('usersTableContainer');
+
+            if (users.length === 0) {
+                container.innerHTML = '<div class="empty-state">No hay usuarios registrados</div>';
+                return;
+            }
+
+            let tableHTML = `
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Nombre Completo</th>
+                            <th>Tipo de Cuenta</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            users.forEach(user => {
+                const roleBadge = getRoleBadge(user.role);
+                tableHTML += `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td><strong>${user.username}</strong></td>
+                        <td>${user.fullName}</td>
+                        <td>${roleBadge}</td>
+                        <td>
+                            <button class="btn btn-secondary" onclick="editUser(${user.id})">✏️ Editar</button>
+                            <button class="btn btn-danger" onclick="deleteUserConfirm(${user.id}, '${user.username}')">🗑️ Eliminar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = tableHTML;
+        }
+
+        function getRoleBadge(role) {
+            const roles = {
+                'admin': 'Administrador',
+                'tester': 'Inspector',
+                'tesorera': 'Tesorera',
+                'buyer': 'Comprador',
+                'guest': 'Invitado'
+            };
+            
+            const roleClass = `role-badge role-${role}`;
+            return `<span class="${roleClass}">${roles[role] || role}</span>`;
+        }
+
+        function createNewUser() {
+            const fullName = document.getElementById('newFullName').value;
+            const username = document.getElementById('newUsername').value;
+            const password = document.getElementById('newPassword').value;
+            const role = document.getElementById('newRole').value;
+
+            if (!fullName || !username || !password) {
+                showError('Todos los campos son requeridos');
+                return;
+            }
+
+            const result = registerUser(username, password, fullName, role);
+
+            if (result.success) {
+                showSuccess(`✓ Usuario "${username}" creado exitosamente como ${role}`);
+                resetCreateForm();
+                loadUsers();
+            } else {
+                showError(result.message);
+            }
+        }
+
+        function editUser(userId) {
+            const users = getAllUsers();
+            const user = users.find(u => u.id === userId);
+
+            if (!user) {
+                showError('Usuario no encontrado');
+                return;
+            }
+
+            const newFullName = prompt('Nombre Completo:', user.fullName);
+            if (newFullName === null) return;
+
+            const newRole = prompt('Tipo de Cuenta (admin/tester/tesorera/buyer):', user.role);
+            if (newRole === null) return;
+
+            const result = updateUser(userId, { fullName: newFullName, role: newRole });
+
+            if (result.success) {
+                showSuccess(`✓ Usuario actualizado exitosamente`);
+                loadUsers();
+            } else {
+                showError(result.message);
+            }
+        }
+
+        function deleteUserConfirm(userId, username) {
+            if (confirm(`¿Estás seguro de que deseas eliminar el usuario "${username}"?`)) {
+                const result = deleteUser(userId);
+                if (result.success) {
+                    showSuccess(`✓ Usuario "${username}" eliminado`);
+                    loadUsers();
+                } else {
+                    showError(result.message);
+                }
+            }
+        }
+
+        function resetCreateForm() {
+            document.getElementById('newFullName').value = '';
+            document.getElementById('newUsername').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('newRole').value = 'admin';
+        }
+
+        function showSuccess(message) {
+            const msg = document.getElementById('successMessage');
+            msg.textContent = message;
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 4000);
+        }
+
+        function showError(message) {
+            const msg = document.getElementById('errorMessage');
+            msg.textContent = '❌ ' + message;
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 4000);
+        }
+
+        function handleLogout() {
+            if (confirm('¿Deseas cerrar sesión?')) {
+                logout();
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>

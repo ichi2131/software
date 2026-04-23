@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+        }
+        .user-badge {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+        .logout-btn {
+            background: var(--delete-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        body { position: relative; }
+    </style>
+</head>
+<body>
+    <div class="user-info">
+        <span id="userName">Usuario</span>
+        <span id="userRole" class="user-badge">Rol</span>
+        <a href="index.html" class="home-btn" style="background: var(--primary-color); color: white; border: none; padding: 5px 10px; border-radius: var(--border-radius); cursor: pointer; font-size: 0.9em; text-decoration: none; display: inline-block;">🏠 Inicio</a>
+        <button class="logout-btn" onclick="handleLogout()">Salir</button>
+    </div>
+
+    <!-- Header será renderizado por JavaScript -->
+
+    <nav>
+        <a href="index.html">Inicio</a>
+        <a href="view_inventory.html">Ver Inventario</a>
+    </nav>
+    <h1>Reportes de Inventario</h1>
+
+    <div class="report">
+        <h2>Productos con Stock Bajo (menos de 10 unidades)</h2>
+        <table id="lowStockTable">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Cantidad</th>
+                    <th>Categoría</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="report">
+        <h2>Valor Total del Inventario</h2>
+        <p id="totalValue">Calculando...</p>
+    </div>
+
+    <div class="report">
+        <h2>Productos por Categoría</h2>
+        <table id="categoryTable">
+            <thead>
+                <tr>
+                    <th>Categoría</th>
+                    <th>Cantidad de Productos</th>
+                    <th>Valor Total</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            const user = getCurrentUser();
+            document.getElementById('userName').textContent = user.fullName || user.username;
+            document.getElementById('userRole').textContent = user.role.toUpperCase();
+
+            // Renderizar header y footer
+            renderHeader();
+            renderFooter();
+
+            if (!hasPermission('view_reports')) {
+                document.body.innerHTML = '<div class="container"><h2>❌ Acceso Denegado</h2><p>No tienes permiso para ver reportes.</p></div>';
+                return;
+            }
+
+            generateReports();
+        });
+
+        function generateReports() {
+            const inventory = getInventory();
+
+            // Stock bajo
+            const lowStock = inventory.filter(p => p.quantity < 10);
+            const lowStockTbody = document.querySelector('#lowStockTable tbody');
+            lowStockTbody.innerHTML = '';
+            lowStock.forEach(product => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.name}</td>
+                    <td>${product.quantity}</td>
+                    <td>${product.category}</td>
+                `;
+                lowStockTbody.appendChild(row);
+            });
+
+            // Valor total
+            if (hasPermission('view_prices')) {
+                const totalValue = inventory.reduce((sum, p) => sum + (p.price * p.quantity), 0);
+                document.getElementById('totalValue').textContent = `$${totalValue.toFixed(2)}`;
+
+                // Por categoría
+                const categories = {};
+                inventory.forEach(product => {
+                    if (!categories[product.category]) {
+                        categories[product.category] = { count: 0, value: 0 };
+                    }
+                    categories[product.category].count++;
+                    categories[product.category].value += product.price * product.quantity;
+                });
+                const categoryTbody = document.querySelector('#categoryTable tbody');
+                categoryTbody.innerHTML = '';
+                for (const [cat, data] of Object.entries(categories)) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${cat}</td>
+                        <td>${data.count}</td>
+                        <td>$${data.value.toFixed(2)}</td>
+                    `;
+                    categoryTbody.appendChild(row);
+                }
+            } else {
+                document.getElementById('totalValue').textContent = '-- (Acceso restringido)';
+                document.querySelector('#categoryTable tbody').innerHTML = '<tr><td colspan="3">Acceso restringido</td></tr>';
+            }
+        }
+
+        function handleLogout() {
+            if (confirm('¿Deseas cerrar sesión?')) {
+                logout();
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>

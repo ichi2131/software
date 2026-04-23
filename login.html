@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio de Sesión</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 100%) !important;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-container h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1em;
+            font-family: var(--font-family);
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+        }
+
+        .error-message {
+            color: var(--error-text);
+            background-color: var(--error-bg);
+            padding: 12px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .info-box {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        .info-box h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .user-item {
+            margin: 8px 0;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .user-item strong {
+            color: var(--primary-color);
+        }
+
+        header,
+        nav {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>🔐 Acceso al Sistema</h1>
+        
+        <div class="info-box">
+            <h3>Usuarios de Prueba:</h3>
+            <div class="user-item">
+                <strong>Owner:</strong> owner / owner123
+            </div>
+            <div class="user-item">
+                <strong>Admin:</strong> admin / admin123
+            </div>
+            <div class="user-item">
+                <strong>Inspector:</strong> tester / tester123
+            </div>
+            <div class="user-item">
+                <strong>Tesorera:</strong> tesorera / tesorera123
+            </div>
+            <div class="user-item">
+                <strong>Comprador:</strong> buyer / buyer123
+            </div>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="username">Usuario:</label>
+                <input type="text" id="username" required placeholder="Ingrese su usuario">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" required placeholder="Ingrese su contraseña">
+            </div>
+
+            <button type="submit" class="login-btn">Iniciar Sesión</button>
+        </form>
+
+        <div style="margin-top: 20px; text-align: center; border-top: 1px solid var(--border-color); padding-top: 20px;">
+            <p style="margin: 0 0 10px 0; color: var(--text-color);">¿No tienes cuenta?</p>
+            <a href="signup.html" class="login-btn" style="display: inline-block; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); text-decoration: none; color: white;">📝 Crear Cuenta</a>
+            <button class="login-btn" onclick="loginAsGuest()" style="background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%); margin-top: 10px;">👤 Continuar como Invitado</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Inicializar usuarios al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+            initializeUsers();
+            
+            const user = getCurrentUser();
+            if (user) {
+                if (user.role === 'guest') {
+                    window.location.href = 'browse.html';
+                } else {
+                    window.location.href = 'index.html';
+                }
+            }
+        });
+
+        function loginAsGuest() {
+            loginGuest();
+            window.location.href = 'browse.html';
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (login(username, password)) {
+                const user = getCurrentUser();
+                window.location.href = 'index.html';
+            } else {
+                const errorDiv = document.getElementById('errorMessage');
+                errorDiv.textContent = '❌ Usuario o contraseña incorrectos';
+                errorDiv.style.display = 'block';
+                document.getElementById('password').value = '';
+            }
+        }
+    </script>
+</body>
+</html>

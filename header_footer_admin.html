@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Encabezado y Pie</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .section h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-family: var(--font-family);
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--border-color);
+            color: var(--text-color);
+        }
+
+        .success-message {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .preview {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-top: 10px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        nav {
+            display: none;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .user-badge {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+
+        .logout-btn {
+            background: var(--delete-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        body {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="user-info">
+        <span id="userName">Usuario</span>
+        <span id="userRole" class="user-badge">Rol</span>
+        <a href="index.html" class="home-btn" style="background: var(--primary-color); color: white; border: none; padding: 5px 10px; border-radius: var(--border-radius); cursor: pointer; font-size: 0.9em; text-decoration: none; display: inline-block;">🏠 Inicio</a>
+        <button class="logout-btn" onclick="handleLogout()">Salir</button>
+    </div>
+
+    <!-- Header será renderizado por JavaScript -->
+
+    <nav>
+        <a href="index.html">← Volver</a>
+    </nav>
+
+    <div class="admin-container">
+        <h1>⚙️ Administración de Encabezado y Pie de Página</h1>
+
+        <div id="successMessage" class="success-message">✓ Cambios guardados exitosamente</div>
+
+        <!-- ENCABEZADO -->
+        <div class="section">
+            <h2>📌 Personalización del Encabezado</h2>
+            
+            <div class="form-group">
+                <label for="headerTitle">Título Principal:</label>
+                <input type="text" id="headerTitle" placeholder="Ej: Sistema de Administración de Inventario">
+                <div class="preview">
+                    <strong>Vista previa:</strong> <span id="previewTitle">Sistema de Administración de Inventario</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="headerSubtitle">Subtítulo:</label>
+                <input type="text" id="headerSubtitle" placeholder="Ej: Gestiona tu inventario de forma eficiente">
+                <div class="preview">
+                    <strong>Vista previa:</strong> <span id="previewSubtitle">Gestiona tu inventario de forma eficiente</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="headerLogo">Logo/Icono:</label>
+                <input type="text" id="headerLogo" placeholder="Ej: 📦" maxlength="5">
+                <div class="preview">
+                    <strong>Vista previa:</strong> <span id="previewLogo">📦</span>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="saveHeaderConfig()">💾 Guardar Encabezado</button>
+                <button class="btn btn-secondary" onclick="resetHeader()">🔄 Restablecer</button>
+            </div>
+        </div>
+
+        <!-- PIE DE PÁGINA -->
+        <div class="section">
+            <h2>👣 Personalización del Pie de Página</h2>
+
+            <div class="form-group">
+                <label for="companyName">Nombre de la Empresa:</label>
+                <input type="text" id="companyName" placeholder="Ej: Mi Empresa">
+            </div>
+
+            <div class="form-group">
+                <label for="address">Dirección:</label>
+                <input type="text" id="address" placeholder="Ej: Calle Principal 123, Ciudad">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Teléfono:</label>
+                <input type="text" id="phone" placeholder="Ej: (+1) 555-0000">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="text" id="email" placeholder="Ej: info@empresa.com">
+            </div>
+
+            <div class="form-group">
+                <label for="copyright">Texto de Derechos de Autor:</label>
+                <input type="text" id="copyright" placeholder="Ej: © 2026 Todos los derechos reservados">
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="saveFooterConfig()">💾 Guardar Pie de Página</button>
+                <button class="btn btn-secondary" onclick="resetFooter()">🔄 Restablecer</button>
+            </div>
+        </div>
+
+        <!-- INFORMACIÓN -->
+        <div class="section">
+            <h2>ℹ️ Información</h2>
+            <p>Los cambios en el encabezado y pie de página se aplicarán a todas las páginas del sistema automáticamente.</p>
+            <p><strong>Nota:</strong> Los cambios se guardan en el almacenamiento local del navegador.</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            const user = getCurrentUser();
+            document.getElementById('userName').textContent = user.fullName || user.username;
+            document.getElementById('userRole').textContent = user.role.toUpperCase();
+
+            // Renderizar header y footer
+            renderHeader();
+            renderFooter();
+
+            if (user.role !== 'admin') {
+                window.location.href = 'index.html';
+            }
+
+            loadHeaderConfig();
+            loadFooterConfig();
+        });
+
+        function loadHeaderConfig() {
+            const config = getHeaderConfig();
+            document.getElementById('headerTitle').value = config.title;
+            document.getElementById('headerSubtitle').value = config.subtitle;
+            document.getElementById('headerLogo').value = config.logoText;
+            
+            updateHeaderPreview();
+        }
+
+        function loadFooterConfig() {
+            const config = getFooterConfig();
+            document.getElementById('companyName').value = config.companyName;
+            document.getElementById('address').value = config.address;
+            document.getElementById('phone').value = config.phone;
+            document.getElementById('email').value = config.email;
+            document.getElementById('copyright').value = config.copyright;
+        }
+
+        function updateHeaderPreview() {
+            document.getElementById('previewTitle').textContent = document.getElementById('headerTitle').value;
+            document.getElementById('previewSubtitle').textContent = document.getElementById('headerSubtitle').value;
+            document.getElementById('previewLogo').textContent = document.getElementById('headerLogo').value;
+        }
+
+        document.getElementById('headerTitle').addEventListener('input', updateHeaderPreview);
+        document.getElementById('headerSubtitle').addEventListener('input', updateHeaderPreview);
+        document.getElementById('headerLogo').addEventListener('input', updateHeaderPreview);
+
+        function saveHeaderConfig() {
+            const config = {
+                title: document.getElementById('headerTitle').value,
+                subtitle: document.getElementById('headerSubtitle').value,
+                logoText: document.getElementById('headerLogo').value
+            };
+            saveHeaderConfig(config);
+            showSuccess();
+        }
+
+        function saveFooterConfig() {
+            const config = {
+                companyName: document.getElementById('companyName').value,
+                address: document.getElementById('address').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                copyright: document.getElementById('copyright').value
+            };
+            saveFooterConfig(config);
+            showSuccess();
+        }
+
+        function resetHeader() {
+            if (confirm('¿Deseas restablecer el encabezado a los valores predeterminados?')) {
+                localStorage.removeItem('headerConfig');
+                loadHeaderConfig();
+                showSuccess();
+            }
+        }
+
+        function resetFooter() {
+            if (confirm('¿Deseas restablecer el pie de página a los valores predeterminados?')) {
+                localStorage.removeItem('footerConfig');
+                loadFooterConfig();
+                showSuccess();
+            }
+        }
+
+        function showSuccess() {
+            const msg = document.getElementById('successMessage');
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 3000);
+        }
+
+        function handleLogout() {
+            if (confirm('¿Deseas cerrar sesión?')) {
+                logout();
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>

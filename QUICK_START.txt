@@ -1,0 +1,213 @@
+================================================================================
+  🚀 INICIO RÁPIDO - Sistema de Administración de Inventario v2.0
+================================================================================
+
+📍 UBICACIÓN DEL ARCHIVO PRINCIPAL:
+   → Abre: login.html
+
+================================================================================
+👤 CREDENCIALES DE PRUEBA (¡Úsalas para explorar!)
+================================================================================
+
+ADMINISTRADOR (Acceso Total):
+   Usuario: admin
+   Contraseña: admin123
+   
+INSPECTOR (Solo Lectura):
+   Usuario: tester
+   Contraseña: tester123
+
+TESORERA (Lectura + Precios):
+   Usuario: tesorera
+   Contraseña: tesorera123
+
+================================================================================
+🎯 PRIMEROS PASOS
+================================================================================
+
+1. ABRIR EL SISTEMA:
+   • Abre login.html en tu navegador (Chrome, Firefox, Edge, Safari)
+   • O arrastra login.html a una pestaña del navegador
+
+2. ELEGIR UN ROL:
+   • Copia una contraseña de arriba
+   • Pega en la pantalla de login
+   • Click "Iniciar Sesión"
+
+3. EXPLORAR:
+   • Admin: Ve a "⚙️ Configuración" para cambiar fondos y colores
+   • Tester: Ve a "Ver Inventario" para inspeccionar stock
+   • Tesorera: Ve a "Reportes" para ver valores
+
+================================================================================
+⚡ ACCIONES RÁPIDAS POR ROL
+================================================================================
+
+[ADMIN] Agregar Producto:
+   1. Click "Agregar Producto"
+   2. Completa formulario
+   3. Click "Agregar Producto"
+   ✓ Producto aparece en "Ver Inventario"
+
+[ADMIN] Cambiar Fondo:
+   1. Click "⚙️ Configuración"
+   2. En "Fondos", click "📁 Selecciona una imagen"
+   3. Sube PNG o JPG
+   4. Click "💾 Guardar Configuración"
+   ✓ Fondo cambia en TODAS las páginas
+
+[ADMIN] Cambiar Colores:
+   1. Click "⚙️ Configuración"
+   2. En "Colores Principales", click en caja de color
+   3. Selecciona nuevo color
+   4. Click "💾 Guardar Configuración"
+   ✓ Colores se aplican instantáneamente
+
+[TESTER] Ver Inventario:
+   1. Click "Ver Inventario"
+   2. Ves lista de productos y stock
+   3. NO ves precios (función de seguridad)
+
+[TESORERA] Ver Reportes:
+   1. Click "Reportes"
+   2. Ve stock bajo, valor total, desglose por categoría
+   3. Acceso completo a precios y valores
+
+================================================================================
+📁 ARCHIVOS INCLUIDOS
+================================================================================
+
+PÁGINAS PRINCIPALES:
+  • login.html           → Acceso al sistema
+  • index.html           → Página de inicio
+  • add_product.html     → Agregar productos (Admin)
+  • view_inventory.html  → Ver inventario (Todos)
+  • search_product.html  → Buscar (Todos)
+  • edit_product.html    → Editar (Admin)
+  • reports.html         → Reportes (Admin, Tesorera)
+  • config.html          → Configuración (Admin)
+
+CÓDIGO Y ESTILOS:
+  • app.js               → Lógica de autenticación y permisos
+  • styles.css           → Estilos CSS con variables
+
+DOCUMENTACIÓN:
+  • README.md            → Guía completa
+  • CHANGES.md           → Todos los cambios realizados
+  • DEMO.md              → Guía paso a paso
+  • QUICK_START.txt      → Este archivo
+
+================================================================================
+🔐 CARACTERÍSTICAS DE SEGURIDAD
+================================================================================
+
+✓ Autenticación por usuario y contraseña
+✓ 3 roles con permisos diferentes
+✓ Datos protegidos por rol
+✓ Acceso denegado automático
+✓ Logout en cualquier momento
+✓ Verificación en cada página
+
+================================================================================
+🎨 PERSONALIZACIÓN DISPONIBLE
+================================================================================
+
+COLORES:
+  • Color primario (header, botones)
+  • Color de texto
+  • Colores de estado (éxito, error)
+  • Colores de botones (editar, eliminar)
+  • Gradientes de fondo
+
+TIPOGRAFÍA:
+  • 8 opciones de fuentes
+  • Tamaños personalizables
+  • Estilos predeterminados
+
+FONDOS:
+  • Sube imágenes PNG, JPG, GIF, WebP
+  • O usa URLs de internet
+  • Control de opacidad (0-100%)
+  • Gradientes como alternativa
+
+ESPACIADO:
+  • Radio de bordes
+  • Espaciado de formularios
+  • Sombras (habilitadas/deshabilitadas)
+
+================================================================================
+💾 DÓNDE SE GUARDAN LOS DATOS
+================================================================================
+
+TODO se guarda en localStorage del navegador:
+  • ✓ Usuarios y roles
+  • ✓ Sesión actual
+  • ✓ Inventario
+  • ✓ Configuración de diseño
+  • ✓ Fondos (convertidos a Base64)
+
+⚠️ IMPORTANTE: Si limpias datos del navegador, perderás todo.
+
+================================================================================
+🆘 AYUDA RÁPIDA
+================================================================================
+
+¿No puedo hacer login?
+  → Verifica que escribas exactamente: admin, tester o tesorera
+  → Contraseña debe ser exacta (mayúsculas importan)
+
+¿No aparece el menú "Agregar Producto"?
+  → Probablemente NO eres admin
+  → Login como: admin / admin123
+
+¿Los cambios de color no se guardan?
+  → Click en "💾 Guardar Configuración" (importante!)
+  → Recarga la página con F5 o Ctrl+R
+
+¿Desaparecieron todos mis productos?
+  → Probablemente limpiaste datos del navegador
+  → Limpia caché (Ctrl+Shift+Delete) y comienza de nuevo
+
+¿El fondo no se aplica?
+  → Asegúrate de:
+     1) Ser admin
+     2) Subir imagen válida
+     3) Click en "Guardar"
+     4) Recarga la página (F5)
+
+================================================================================
+🚀 PRÓXIMOS PASOS
+================================================================================
+
+1. Lee README.md para guía completa
+2. Prueba con cada rol (admin, tester, tesorera)
+3. Personaliza colores y fondos como admin
+4. Prueba restric ciones de seguridad con tester
+5. Genera reportes como tesorera
+
+================================================================================
+✨ CARACTERÍSTICAS DESTACADAS
+================================================================================
+
+🔐 AUTENTICACIÓN REAL
+   Sistema de login con 3 roles diferentes
+
+📸 FONDOS PERSONALIZADOS  
+   Sube tus propias imágenes o usa URLs
+
+🎨 DISEÑO PERSONALIZABLE
+   Cambia colores, fuentes, espaciado
+
+👥 CONTROL DE ACCESO
+   Cada rol ve información diferente
+
+📊 REPORTES DINÁMICOS
+   Reportes según permisos
+
+================================================================================
+
+¡LISTO PARA COMENZAR! 🎉
+
+Abre login.html y ¡explora el sistema!
+
+================================================================================

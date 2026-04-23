@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Administración de Inventario</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .user-badge {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+
+        .logout-btn {
+            background: var(--delete-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: var(--delete-hover);
+        }
+
+        header {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="user-info">
+        <span id="userName">Usuario</span>
+        <span id="userRole" class="user-badge">Rol</span>
+        <button class="logout-btn" onclick="handleLogout()">Salir</button>
+    </div>
+
+    <!-- Header será renderizado por JavaScript -->
+
+    <nav>
+        <a href="index.html" id="navHome">Inicio</a>
+        <a href="browse.html" id="navBrowse">🛍️ Comprar</a>
+        <a href="cart.html" id="navCart">🛒 Carrito</a>
+        <a href="add_product.html" id="navAdd">Agregar Producto</a>
+        <a href="view_inventory.html">Ver Inventario</a>
+        <a href="search_product.html" id="navSearch">Buscar Producto</a>
+        <a href="reports.html" id="navReports">Reportes</a>
+        <a href="config.html" id="navConfig">⚙️ Configuración</a>
+        <a href="user_management.html" id="navUsers">👥 Usuarios</a>
+    </nav>
+    <div class="container">
+        <h2>Bienvenido al Sistema de Inventario</h2>
+        <p id="userWelcome">Utilice el menú de navegación para gestionar su inventario.</p>
+        <div id="stats">
+            <h3>Estadísticas Rápidas</h3>
+            <p id="statsTotal">Total de productos: <span id="totalProducts">0</span></p>
+            <p id="statsValue">Valor total del inventario: $<span id="totalValue">0.00</span></p>
+            <p id="statsLow">Productos con stock bajo: <span id="lowStock">0</span></p>
+            <div style="margin-top: 15px;">
+                <button onclick="openCharts()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 20px; border: none; border-radius: var(--border-radius); cursor: pointer; font-weight: bold;">📊 Ver Gráficos</button>
+            </div>
+        </div>
+        <p>Funciones disponibles:</p>
+        <ul id="functionsList">
+            <li id="func-add">Agregar nuevos productos con detalles como nombre, descripción, cantidad, precio, categoría.</li>
+            <li id="func-edit">Ver y editar la lista completa de productos.</li>
+            <li id="func-search">Buscar productos por nombre o categoría.</li>
+            <li id="func-reports">Generar reportes de inventario bajo, productos por categoría, etc.</li>
+        </ul>
+    </div>
+    <script src="app.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            const user = getCurrentUser();
+            
+            // Renderizar header y footer
+            renderHeader();
+            renderFooter();
+            
+            // Mostrar información del usuario
+            document.getElementById('userName').textContent = user.fullName || user.username;
+            document.getElementById('userRole').textContent = user.role.toUpperCase();
+            
+            // Mensaje personalizado
+            const roleMsg = {
+                'admin': 'Bienvenido Administrador. Tienes acceso completo al sistema.',
+                'tester': 'Bienvenido Inspector. Puedes ver el inventario y stock.',
+                'tesorera': 'Bienvenida Tesorera. Puedes ver precios y reportes financieros.',
+                'buyer': 'Bienvenido Comprador. Explora nuestro catálogo.',
+                'guest': 'Bienvenido Invitado. Explora nuestro catálogo sin registro.'
+            };
+            document.getElementById('userWelcome').textContent = roleMsg[user.role] || 'Bienvenido';
+
+            // Controlar visibilidad de menú según rol
+            if (!hasPermission('add_product')) {
+                document.getElementById('navAdd').style.display = 'none';
+                document.getElementById('func-add').style.display = 'none';
+            }
+            if (!hasPermission('edit_product')) {
+                document.getElementById('func-edit').style.display = 'none';
+            }
+            if (!hasPermission('view_prices')) {
+                document.getElementById('statsValue').style.display = 'none';
+            }
+            if (!hasPermission('view_reports')) {
+                document.getElementById('navReports').style.display = 'none';
+                document.getElementById('func-reports').style.display = 'none';
+            }
+            if (!hasPermission('view_config') && user.role !== 'admin') {
+                document.getElementById('navConfig').style.display = 'none';
+            }
+
+            // Ocultar opciones de admin para no-admins/owner
+            if (user.role !== 'admin' && user.role !== 'owner') {
+                document.getElementById('navUsers').style.display = 'none';
+                document.getElementById('navAdd').style.display = 'none';
+                document.getElementById('navSearch').style.display = 'none';
+                document.getElementById('navConfig').style.display = 'none';
+            }
+
+            // Mostrar opción de compra para buyer e invitados
+            if (!hasPermission('add_to_cart')) {
+                document.getElementById('navBrowse').style.display = 'none';
+                document.getElementById('navCart').style.display = 'none';
+            }
+
+            loadStats();
+        });
+
+        function loadStats() {
+            const inventory = getInventory();
+            document.getElementById('totalProducts').textContent = inventory.length;
+            
+            if (hasPermission('view_prices')) {
+                document.getElementById('totalValue').textContent = getTotalValue().toFixed(2);
+            }
+            document.getElementById('lowStock').textContent = getLowStockProducts().length;
+        }
+
+        function handleLogout() {
+            if (confirm('¿Deseas cerrar sesión?')) {
+                logout();
+                window.location.href = 'login.html';
+            }
+        }
+
+        function openCharts() {
+            // Exportar datos del inventario
+            exportInventoryData();
+            
+            // Abrir gráficos (si existen)
+            const chartFile = 'inventory_chart.html';
+            
+            // Verificar si el archivo existe con fetch
+            fetch(chartFile)
+                .then(response => {
+                    if (response.ok) {
+                        window.open(chartFile, '_blank');
+                    } else {
+                        alert('❌ Los gráficos no están generados yet. Ejecuta: python inventory_charts.py');
+                    }
+                })
+                .catch(() => {
+                    alert('📊 Para ver gráficos:\n1. Abre terminal/CMD en la carpeta del proyecto\n2. Ejecuta: python inventory_charts.py\n3. Se abrirá inventory_chart.html');
+                });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración del Sistema</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .user-badge {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+
+        .logout-btn {
+            background: var(--delete-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: var(--delete-hover);
+        }
+
+        .home-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .home-btn:hover {
+            background: var(--primary-light);
+        }
+
+        header {
+            position: relative;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            text-align: center;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+
+        .file-input-label:hover {
+            transform: translateY(-2px);
+        }
+
+        .file-input-label:active {
+            transform: translateY(0);
+        }
+
+        .file-name {
+            margin-top: 8px;
+            font-size: 0.9em;
+            color: var(--success-text);
+        }
+
+        .lock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .lock-form {
+            background: white;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .lock-form h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .lock-form input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1em;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        .lock-form input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .lock-form button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .lock-form button:hover {
+            transform: translateY(-2px);
+        }
+
+        .lock-form .error {
+            color: var(--delete-color);
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .section h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        input[type="text"],
+        input[type="color"],
+        input[type="range"],
+        input[type="password"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-family: var(--font-family);
+            box-sizing: border-box;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .color-preview {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--border-color);
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .users-table thead {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .users-table th, .users-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .users-table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- PANTALLA DE BLOQUEO -->
+    <div id="lockScreen" class="lock-screen">
+        <div class="lock-form">
+            <h2>🔒 Configuración Protegida</h2>
+            <p>Ingresa la contraseña de administrador para acceder</p>
+            <input type="password" id="adminPassword" placeholder="Contraseña" onkeypress="if(event.key==='Enter') unlockConfig()">
+            <button onclick="unlockConfig()">Desbloquear</button>
+            <div id="lockError" class="error"></div>
+            <p style="margin-top: 20px; font-size: 0.9em; color: #999;">
+                <a href="index.html" style="color: var(--primary-color);">← Volver sin desbloquear</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div id="mainContent" style="display: none;">
+        <div class="user-info">
+            <span id="userName">Usuario</span>
+            <span id="userRole" class="user-badge">Rol</span>
+            <a href="index.html" class="home-btn">🏠 Inicio</a>
+            <button class="logout-btn" onclick="handleLogout()">Salir</button>
+        </div>
+
+        <!-- Header será renderizado por JavaScript -->
+
+        <nav>
+            <a href="index.html">← Volver</a>
+        </nav>
+
+        <div class="container">
+            <h1>⚙️ Configuración del Sistema</h1>
+
+            <div class="tabs">
+                <button class="tab-button active" onclick="switchTab('design')">🎨 Diseño</button>
+                <button class="tab-button" onclick="switchTab('header-footer')">📄 Encabezado/Pie</button>
+                <button class="tab-button" onclick="switchTab('users')">👥 Usuarios</button>
+            </div>
+
+            <!-- TAB: DISEÑO -->
+            <div id="design" class="tab-content active">
+                <div class="section">
+                    <h3>Colores Principales</h3>
+                    <div class="form-group">
+                        <label>Color Primario:
+                            <input type="color" id="primaryColor" onchange="updateDesignConfig()">
+                            <span class="color-preview" id="primaryColorPreview"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Gradiente de Fondo</h3>
+                    <div class="form-group">
+                        <label>Color 1 (Inicio del gradiente):
+                            <input type="color" id="bgGradient1" onchange="updateDesignConfig()">
+                            <span class="color-preview" id="bgGradient1Preview"></span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>Color 2 (Fin del gradiente):
+                            <input type="color" id="bgGradient2" onchange="updateDesignConfig()">
+                            <span class="color-preview" id="bgGradient2Preview"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Imagen de Fondo</h3>
+                    <div class="form-group">
+                        <label>Subir Imagen (PNG/JPG):</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="bgImage" accept="image/*" onchange="handleImageUpload()">
+                            <label for="bgImage" class="file-input-label">📁 Seleccionar Imagen</label>
+                        </div>
+                        <div class="file-name" id="fileName"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="bgOpacity">Opacidad de Imagen:</label>
+                        <input type="range" id="bgOpacity" min="0" max="100" value="100" onchange="updateDesignConfig()">
+                        <span id="opacityValue">100%</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Tipografía</h3>
+                    <div class="form-group">
+                        <label for="fontFamily">Familia de Fuente:</label>
+                        <input type="text" id="fontFamily" placeholder="Arial, sans-serif" onchange="updateDesignConfig()">
+                    </div>
+                    <div class="form-group">
+                        <label for="fontSize">Tamaño Base de Fuente:</label>
+                        <input type="text" id="fontSize" placeholder="16px" onchange="updateDesignConfig()">
+                    </div>
+                </div>
+
+                <button class="btn" onclick="resetDesignConfig()">🔄 Restaurar Valores Predeterminados</button>
+            </div>
+
+            <!-- TAB: ENCABEZADO/PIE -->
+            <div id="header-footer" class="tab-content">
+                <div class="section">
+                    <h3>📋 Encabezado</h3>
+                    <div class="form-group">
+                        <label for="headerTitle">Título del Encabezado:</label>
+                        <input type="text" id="headerTitle" placeholder="Mi Tienda" onchange="updateHeaderFooterConfig()">
+                    </div>
+                    <div class="form-group">
+                        <label for="headerSubtitle">Subtítulo:</label>
+                        <input type="text" id="headerSubtitle" placeholder="Descripción breve" onchange="updateHeaderFooterConfig()">
+                    </div>
+                    <div class="form-group">
+                        <label for="headerLogo">URL del Logo:</label>
+                        <input type="text" id="headerLogo" placeholder="https://ejemplo.com/logo.png" onchange="updateHeaderFooterConfig()">
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>🔗 Pie de Página</h3>
+                    <div class="form-group">
+                        <label for="footerCompany">Nombre de la Empresa:</label>
+                        <input type="text" id="footerCompany" placeholder="Mi Empresa" onchange="updateHeaderFooterConfig()">
+                    </div>
+                    <div class="form-group">
+                        <label for="footerAddress">Dirección:</label>
+                        <input type="text" id="footerAddress" placeholder="Calle 123, Ciudad" onchange="updateHeaderFooterConfig()">
+                    </div>
+                    <div class="form-group">
+                        <label for="footerPhone">Teléfono:</label>
+                        <input type="text" id="footerPhone" placeholder="+34 900 000 000" onchange="updateHeaderFooterConfig()">
+                    </div>
+                    <div class="form-group">
+                        <label for="footerEmail">Email:</label>
+                        <input type="text" id="footerEmail" placeholder="contacto@empresa.com" onchange="updateHeaderFooterConfig()">
+                    </div>
+                    <div class="form-group">
+                        <label for="footerCopyright">Texto de Copyright:</label>
+                        <input type="text" id="footerCopyright" placeholder="© 2024 Mi Empresa. Todos los derechos reservados." onchange="updateHeaderFooterConfig()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: USUARIOS -->
+            <div id="users" class="tab-content">
+                <div class="section">
+                    <h3>👥 Gestión de Usuarios</h3>
+                    <p style="color: #666; margin-bottom: 20px;">Crear, editar y eliminar usuarios que no sean compradores. Los compradores se registran directamente desde la página de inicio.</p>
+                    
+                    <div class="form-group">
+                        <label for="newUserFullName">Nombre Completo:</label>
+                        <input type="text" id="newUserFullName" placeholder="Ej: Juan Pérez">
+                    </div>
+                    <div class="form-group">
+                        <label for="newUserUsername">Usuario:</label>
+                        <input type="text" id="newUserUsername" placeholder="Ej: juanperez">
+                    </div>
+                    <div class="form-group">
+                        <label for="newUserPassword">Contraseña:</label>
+                        <input type="password" id="newUserPassword" placeholder="Contraseña segura">
+                    </div>
+                    <div class="form-group">
+                        <label for="newUserRole">Tipo de Cuenta:</label>
+                        <select id="newUserRole">
+                            <option value="owner">Owner - Acceso total y configuración</option>
+                            <option value="admin">Administrador - Gestión de productos</option>
+                            <option value="tester">Inspector - Ver inventario y stock</option>
+                            <option value="tesorera">Tesorera - Ver precios y reportes</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="createUserFromConfig()" style="margin-top: 15px;">✓ Crear Usuario</button>
+                </div>
+
+                <div class="section">
+                    <h3>📋 Usuarios Registrados</h3>
+                    <div id="usersTableContainer"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer será renderizado por JavaScript -->
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        let configUnlocked = false;
+        const CONFIG_PASSWORD = 'owner123';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const user = getCurrentUser();
+            if (!user || user.role !== 'owner') {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Renderizar header y footer
+            renderHeader();
+            renderFooter();
+
+            // Mostrar información del usuario
+            document.getElementById('userName').textContent = user.fullName || user.username;
+            document.getElementById('userRole').textContent = user.role.toUpperCase();
+
+            // Cargar configuración guardada
+            loadDesignConfig();
+            loadHeaderFooterConfig();
+        });
+
+        function unlockConfig() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === CONFIG_PASSWORD) {
+                configUnlocked = true;
+                document.getElementById('lockScreen').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+            } else {
+                document.getElementById('lockError').textContent = 'Contraseña incorrecta';
+                document.getElementById('adminPassword').value = '';
+            }
+        }
+
+        function switchTab(tabName) {
+            // Ocultar todos los tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Mostrar el tab seleccionado
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // Si es el tab de usuarios, cargar la tabla
+            if (tabName === 'users') {
+                loadUsersTable();
+            }
+        }
+
+        function loadDesignConfig() {
+            const config = getDesignConfig();
+            if (config) {
+                document.getElementById('primaryColor').value = config.primaryColor || '#2196F3';
+                document.getElementById('bgGradient1').value = config.bgGradient1 || '#667eea';
+                document.getElementById('bgGradient2').value = config.bgGradient2 || '#764ba2';
+                document.getElementById('bgOpacity').value = config.bgOpacity || 100;
+                document.getElementById('fontFamily').value = config.fontFamily || 'Arial, sans-serif';
+                document.getElementById('fontSize').value = config.fontSize || '16px';
+                updateColorPreviews();
+            }
+        }
+
+        function loadHeaderFooterConfig() {
+            const config = getHeaderConfig();
+            if (config) {
+                document.getElementById('headerTitle').value = config.title || '';
+                document.getElementById('headerSubtitle').value = config.subtitle || '';
+                document.getElementById('headerLogo').value = config.logo || '';
+            }
+
+            const footerConfig = getFooterConfig();
+            if (footerConfig) {
+                document.getElementById('footerCompany').value = footerConfig.company || '';
+                document.getElementById('footerAddress').value = footerConfig.address || '';
+                document.getElementById('footerPhone').value = footerConfig.phone || '';
+                document.getElementById('footerEmail').value = footerConfig.email || '';
+                document.getElementById('footerCopyright').value = footerConfig.copyright || '';
+            }
+        }
+
+        function updateDesignConfig() {
+            const config = {
+                primaryColor: document.getElementById('primaryColor').value,
+                bgGradient1: document.getElementById('bgGradient1').value,
+                bgGradient2: document.getElementById('bgGradient2').value,
+                bgOpacity: document.getElementById('bgOpacity').value,
+                fontFamily: document.getElementById('fontFamily').value,
+                fontSize: document.getElementById('fontSize').value
+            };
+
+            saveDesignConfig(config);
+            applyDesignConfig(config);
+            updateColorPreviews();
+
+            const opacityValue = document.getElementById('bgOpacity').value;
+            document.getElementById('opacityValue').textContent = opacityValue + '%';
+        }
+
+        function updateHeaderFooterConfig() {
+            const headerConfig = {
+                title: document.getElementById('headerTitle').value,
+                subtitle: document.getElementById('headerSubtitle').value,
+                logo: document.getElementById('headerLogo').value
+            };
+
+            const footerConfig = {
+                company: document.getElementById('footerCompany').value,
+                address: document.getElementById('footerAddress').value,
+                phone: document.getElementById('footerPhone').value,
+                email: document.getElementById('footerEmail').value,
+                copyright: document.getElementById('footerCopyright').value
+            };
+
+            saveHeaderConfig(headerConfig);
+            saveFooterConfig(footerConfig);
+            renderHeader();
+            renderFooter();
+        }
+
+        function updateColorPreviews() {
+            document.getElementById('primaryColorPreview').style.backgroundColor = document.getElementById('primaryColor').value;
+            document.getElementById('bgGradient1Preview').style.backgroundColor = document.getElementById('bgGradient1').value;
+            document.getElementById('bgGradient2Preview').style.backgroundColor = document.getElementById('bgGradient2').value;
+        }
+
+        function resetDesignConfig() {
+            if (confirm('¿Restaurar configuración de diseño predeterminada?')) {
+                localStorage.removeItem('designConfig');
+                location.reload();
+            }
+        }
+
+        function handleImageUpload() {
+            const file = document.getElementById('bgImage').files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const config = getDesignConfig() || {};
+                    config.bgImage = e.target.result;
+                    saveDesignConfig(config);
+                    applyDesignConfig(config);
+                    document.getElementById('fileName').textContent = '✓ ' + file.name + ' cargado';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function handleLogout() {
+            if (confirm('¿Deseas cerrar sesión?')) {
+                logout();
+                window.location.href = 'login.html';
+            }
+        }
+
+        // ============ GESTIÓN DE USUARIOS DESDE CONFIGURACIÓN ============
+        function createUserFromConfig() {
+            const fullName = document.getElementById('newUserFullName').value;
+            const username = document.getElementById('newUserUsername').value;
+            const password = document.getElementById('newUserPassword').value;
+            const role = document.getElementById('newUserRole').value;
+
+            if (!fullName || !username || !password) {
+                alert('❌ Todos los campos son requeridos');
+                return;
+            }
+
+            const result = registerUser(username, password, fullName, role);
+            if (result.success) {
+                alert(`✓ Usuario "${username}" creado exitosamente como ${role}`);
+                document.getElementById('newUserFullName').value = '';
+                document.getElementById('newUserUsername').value = '';
+                document.getElementById('newUserPassword').value = '';
+                loadUsersTable();
+            } else {
+                alert('❌ ' + result.message);
+            }
+        }
+
+        function loadUsersTable() {
+            const users = getAllUsers();
+            const container = document.getElementById('usersTableContainer');
+
+            if (users.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999;">No hay usuarios registrados</p>';
+                return;
+            }
+
+            let tableHTML = `
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Nombre</th>
+                            <th>Tipo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            users.forEach(user => {
+                const roleLabel = { 'owner': 'Owner', 'admin': 'Admin', 'tester': 'Inspector', 'tesorera': 'Tesorera', 'buyer': 'Comprador', 'guest': 'Invitado' }[user.role] || user.role;
+                tableHTML += `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td><strong>${user.username}</strong></td>
+                        <td>${user.fullName}</td>
+                        <td>${roleLabel}</td>
+                        <td>
+                            <button onclick="deleteUserFromConfig(${user.id}, '${user.username}')" style="background: var(--delete-color); color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">🗑️ Eliminar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = tableHTML;
+        }
+
+        function deleteUserFromConfig(userId, username) {
+            if (confirm(`¿Eliminar usuario "${username}"?`)) {
+                const result = deleteUser(userId);
+                if (result.success) {
+                    alert(`✓ Usuario "${username}" eliminado`);
+                    loadUsersTable();
+                } else {
+                    alert('❌ ' + result.message);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

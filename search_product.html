@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Producto</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+        }
+        .user-badge {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+        .logout-btn {
+            background: var(--delete-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        body { position: relative; }
+    </style>
+</head>
+<body>
+    <div class="user-info">
+        <span id="userName">Usuario</span>
+        <span id="userRole" class="user-badge">Rol</span>
+        <a href="index.html" class="home-btn" style="background: var(--primary-color); color: white; border: none; padding: 5px 10px; border-radius: var(--border-radius); cursor: pointer; font-size: 0.9em; text-decoration: none; display: inline-block;">🏠 Inicio</a>
+        <button class="logout-btn" onclick="handleLogout()">Salir</button>
+    </div>
+
+    <!-- Header será renderizado por JavaScript -->
+
+    <nav>
+        <a href="index.html">Inicio</a>
+        <a href="view_inventory.html">Ver Inventario</a>
+    </nav>
+    <h1>Buscar Productos</h1>
+    <div>
+        <input type="text" id="searchName" placeholder="Buscar por nombre">
+        <select id="searchCategory">
+            <option value="">Todas las categorías</option>
+            <option value="Electrónicos">Electrónicos</option>
+            <option value="Ropa">Ropa</option>
+            <option value="Alimentos">Alimentos</option>
+            <option value="Hogar">Hogar</option>
+            <option value="Otros">Otros</option>
+        </select>
+        <button onclick="searchProducts()">Buscar</button>
+    </div>
+    <table id="searchResults">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Categoría</th>
+                <th>Proveedor</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script src="app.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            const user = getCurrentUser();
+            document.getElementById('userName').textContent = user.fullName || user.username;
+            document.getElementById('userRole').textContent = user.role.toUpperCase();
+
+            // Renderizar header y footer
+            renderHeader();
+            renderFooter();
+
+            searchProducts();
+        });
+
+        function searchProducts() {
+            const nameQuery = document.getElementById('searchName').value.toLowerCase();
+            const categoryQuery = document.getElementById('searchCategory').value;
+            const inventory = getInventory();
+            const results = inventory.filter(product => {
+                const matchesName = product.name.toLowerCase().includes(nameQuery);
+                const matchesCategory = !categoryQuery || product.category === categoryQuery;
+                return matchesName && matchesCategory;
+            });
+            displayResults(results);
+        }
+
+        function displayResults(results) {
+            const tbody = document.querySelector('#searchResults tbody');
+            tbody.innerHTML = '';
+            results.forEach(product => {
+                let priceCell = hasPermission('view_prices') 
+                    ? `<td>$${product.price.toFixed(2)}</td>` 
+                    : '<td>--</td>';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.name}</td>
+                    <td>${product.description}</td>
+                    <td>${product.quantity}</td>
+                    ${priceCell}
+                    <td>${product.category}</td>
+                    <td>${product.supplier}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function handleLogout() {
+            if (confirm('¿Deseas cerrar sesión?')) {
+                logout();
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>

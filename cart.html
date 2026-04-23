@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Carrito</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .cart-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .cart-table th, .cart-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .cart-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .quantity-input {
+            width: 60px;
+            padding: 5px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+        }
+
+        .remove-btn {
+            background-color: var(--delete-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .remove-btn:hover {
+            background-color: var(--delete-hover);
+        }
+
+        .cart-summary {
+            background-color: var(--bg-gradient-1);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: flex-end;
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .summary-total {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--primary-color);
+            border-top: 2px solid var(--primary-color);
+            padding-top: 10px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .btn-primary-cart {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+        }
+
+        .btn-primary-cart:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+        }
+
+        .btn-secondary-cart {
+            background-color: var(--border-color);
+            color: var(--text-color);
+        }
+
+        .btn-secondary-cart:hover {
+            background-color: #ccc;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .empty-cart-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        nav {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="browse.html">← Volver</a>
+    </nav>
+
+    <div class="cart-container">
+        <h1>🛒 Mi Carrito</h1>
+        
+        <div id="cartContent"></div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            if (!hasPermission('view_cart')) {
+                window.location.href = 'login.html';
+            }
+
+            renderHeader();
+            renderFooter();
+            loadCart();
+        });
+
+        function loadCart() {
+            const cart = getCart();
+            const container = document.getElementById('cartContent');
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-cart">
+                        <div class="empty-cart-icon">🛒</div>
+                        <h2>Tu carrito está vacío</h2>
+                        <p>Agrega productos para continuar</p>
+                        <button class="btn btn-primary-cart" onclick="window.location.href='browse.html'">
+                            🛍️ Seguir Comprando
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            let cartHTML = `
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Precio Unitario</th>
+                            <th>Cantidad</th>
+                            <th>Subtotal</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            cart.forEach(item => {
+                const subtotal = item.price * item.quantity;
+                cartHTML += `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>$${item.price.toFixed(2)}</td>
+                        <td>
+                            <input type="number" class="quantity-input" value="${item.quantity}" 
+                                   onchange="updateQuantity(${item.id}, this.value)">
+                        </td>
+                        <td>$${subtotal.toFixed(2)}</td>
+                        <td>
+                            <button class="remove-btn" onclick="removeItem(${item.id})">
+                                ❌ Quitar
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            const total = getCartTotal();
+
+            cartHTML += `
+                    </tbody>
+                </table>
+
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span style="margin-left: 20px;">$${total.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Impuestos (0%):</span>
+                        <span style="margin-left: 20px;">$0.00</span>
+                    </div>
+                    <div class="summary-row summary-total">
+                        <span>TOTAL:</span>
+                        <span style="margin-left: 20px;">$${total.toFixed(2)}</span>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary-cart" onclick="window.location.href='browse.html'">
+                        🛍️ Seguir Comprando
+                    </button>
+                    <button class="btn btn-primary-cart" onclick="checkout()">
+                        ✓ Procesar Compra
+                    </button>
+                </div>
+            `;
+
+            container.innerHTML = cartHTML;
+        }
+
+        function updateQuantity(productId, quantity) {
+            quantity = parseInt(quantity);
+            if (quantity > 0) {
+                updateCartQuantity(productId, quantity);
+                loadCart();
+            }
+        }
+
+        function removeItem(productId) {
+            if (confirm('¿Deseas quitar este producto del carrito?')) {
+                removeFromCart(productId);
+                loadCart();
+            }
+        }
+
+        function checkout() {
+            const total = getCartTotal();
+            alert(`✓ Compra procesada exitosamente!\n\nTotal: $${total.toFixed(2)}\n\nGracias por tu compra.`);
+            clearCart();
+            window.location.href = 'browse.html';
+        }
+    </script>
+</body>
+</html>

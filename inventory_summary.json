@@ -1,0 +1,42 @@
+{
+  "timestamp": "2026-04-22T18:16:01.375032",
+  "total_products": 8,
+  "total_quantity": 518,
+  "total_value": 17050,
+  "categories": {
+    "Electrónicos": {
+      "quantity": 13,
+      "value": 6400,
+      "products": 2
+    },
+    "Accesorios": {
+      "quantity": 80,
+      "value": 4850,
+      "products": 2
+    },
+    "Ropa": {
+      "quantity": 175,
+      "value": 5000,
+      "products": 2
+    },
+    "Alimentos": {
+      "quantity": 250,
+      "value": 800,
+      "products": 2
+    }
+  },
+  "low_stock": [
+    {
+      "id": 1,
+      "name": "Laptop Dell",
+      "quantity": 5,
+      "category": "Electrónicos"
+    },
+    {
+      "id": 4,
+      "name": "Monitor LG 27\"",
+      "quantity": 8,
+      "category": "Electrónicos"
+    }
+  ]
+}
