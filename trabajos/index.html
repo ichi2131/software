@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vida Urbana - Página de Inspiración</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="main-header">
+    <div class="header-content">
+      <h1>Vida Urbana</h1>
+      <p>Explora ideas de estilo, bienestar y productividad para la ciudad.</p>
+    </div>
+    <div class="header-actions">
+      <label class="switch">
+        <input type="checkbox" id="theme-toggle" aria-label="Cambiar modo claro/oscuro" />
+        <span class="slider"></span>
+      </label>
+      <span class="switch-label" id="switch-label">Modo claro</span>
+    </div>
+    <nav class="nav-bar">
+      <a href="#destacados">Destacados</a>
+      <a href="#cards">Proyectos</a>
+      <a href="#tips">Consejos</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="destacados" class="section card-grid">
+      <article class="card">
+        <h2>Planificación Semanal</h2>
+        <p>Organiza tu semana con bloques de tiempo y un tablero dinámico que se adapta a tus objetivos.</p>
+        <button class="btn-primary" data-action="ver-detalles" data-item="Planificación Semanal">Ver Detalles</button>
+      </article>
+      <article class="card">
+        <h2>Rutina de Energía</h2>
+        <p>Descubre rutinas cortas para mantener la energía en el trabajo urbano, más movimiento y menos fatiga.</p>
+        <button class="btn-primary" data-action="ver-detalles" data-item="Rutina de Energía">Ver Detalles</button>
+      </article>
+      <article class="card">
+        <h2>Espacio Reducido</h2>
+        <p>Soluciones estéticas y prácticas para que tu vivienda pequeña se sienta amplia y acogedora.</p>
+        <button class="btn-primary" data-action="ver-detalles" data-item="Espacio Reducido">Ver Detalles</button>
+      </article>
+    </section>
+
+    <section id="cards" class="section">
+      <h2>Iniciativas en 5 pasos</h2>
+      <ul class="custom-list" id="lista-proyectos">
+        <li>Reutiliza envases como macetas verticales</li>
+        <li>Crea tu rincón de lectura con iluminación cálida</li>
+        <li>Agenda semanal de comidas saludables</li>
+        <li>Camina 30 minutos cada día y registra tu progreso</li>
+      </ul>
+      <div class="btn-group">
+        <button class="btn-secondary" id="btn-agregar">Agregar Idea</button>
+        <button class="btn-secondary" id="btn-limpiar">Limpiar Lista</button>
+      </div>
+    </section>
+
+    <section id="tips" class="section split">
+      <div class="panel">
+        <h3>Consejo Express</h3>
+        <p>Mantén una botella reutilizable siempre contigo para ahorrar plástico y mejorar tu hidratación diaria.</p>
+        <button class="btn-tertiary" id="btn-tip">Otro Consejo</button>
+      </div>
+      <div class="panel" id="resultado-tip">
+        <h3>Tip Rápido</h3>
+        <p>Elige un viaje a pie en vez de en auto al menos 1 vez por semana. Beneficio doble: ejercicio y mente despejada.</p>
+      </div>
+    </section>
+
+    <section id="carrusel" class="section contact-card">
+      <h2>Carrusel de Contenido</h2>
+      <div class="palette-picker">
+        <h4>Paleta de colores:</h4>
+        <button class="palette-btn" data-palette="azul" style="background:#3b82f6"></button>
+        <button class="palette-btn" data-palette="verde" style="background:#10b981"></button>
+        <button class="palette-btn" data-palette="purpura" style="background:#8b5cf6"></button>
+        <button class="palette-btn" data-palette="naranja" style="background:#f97316"></button>
+      </div>
+      <div class="carousel-wrapper">
+        <button class="btn-secondary carousel-nav" id="prev-slide" aria-label="Anterior">«</button>
+        <div class="carousel-track" id="carousel-track">
+          <article class="carousel-item active">
+            <h3>Inspiración de Espacio</h3>
+            <p>Transforma cualquier rincón con iluminación inteligente y paletas de color minimalistas.</p>
+          </article>
+          <article class="carousel-item">
+            <h3>Productividad Urbana</h3>
+            <p>Divide tu jornada en bloques de 45 minutos con descansos cortos para mantener el enfoque.</p>
+          </article>
+          <article class="carousel-item">
+            <h3>Bienestar Exprés</h3>
+            <p>Agrega micro-rituales: estiramiento al despertar, jugo verde, paseo breve y journaling.</p>
+          </article>
+          <article class="carousel-item">
+            <h3>Conexión Social</h3>
+            <p>Planifica un café semanal con amigos/compañeros y comparte metas para avanzar juntos.</p>
+          </article>
+        </div>
+        <button class="btn-secondary carousel-nav" id="next-slide" aria-label="Siguiente">»</button>
+      </div>
+      <p id="carousel-status">Slide 1 de 4</p>
+    </section>
+
+    <section id="contacto" class="section contact-card">
+      <h2>Conéctate</h2>
+      <form id="form-contacto">
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" placeholder="Tu nombre" required />
+        <label for="correo">Correo</label>
+        <input type="email" id="correo" placeholder="correo@ejemplo.com" required />
+        <label for="mensaje">Mensaje</label>
+        <textarea id="mensaje" rows="4" placeholder="Escribe algo..." required></textarea>
+        <button class="btn-primary" type="submit">Enviar</button>
+      </form>
+      <p id="mensaje-enviado" class="hidden">✅ ¡Gracias! Tu mensaje ha sido enviado.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Vida Urbana. Diseñado para inspirar tu día a día.</p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>
