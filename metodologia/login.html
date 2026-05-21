@@ -2,7 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Inicio de Sesión</title>
     <link rel="stylesheet" href="styles.css">
     <style>
@@ -12,22 +14,24 @@
             align-items: center;
             min-height: 100vh;
             background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 100%) !important;
+            padding: 20px;
         }
 
         .login-container {
             background: white;
-            padding: 40px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 50px;
+            border-radius: 12px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
             animation: slideIn 0.5s ease-out;
+            border: 1px solid rgba(33, 150, 243, 0.1);
         }
 
         @keyframes slideIn {
             from {
                 opacity: 0;
-                transform: translateY(-20px);
+                transform: translateY(-30px);
             }
             to {
                 opacity: 1;
@@ -38,8 +42,16 @@
         .login-container h1 {
             text-align: center;
             color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 2.2em;
+            font-weight: 700;
+        }
+
+        .login-subtitle {
+            text-align: center;
+            color: #999;
             margin-bottom: 30px;
-            font-size: 2em;
+            font-size: 0.9em;
         }
 
         .form-group {
@@ -50,74 +62,100 @@
             display: block;
             margin-bottom: 8px;
             color: var(--text-color);
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 0.95em;
         }
 
         input[type="text"],
         input[type="password"] {
             width: 100%;
-            padding: 12px;
+            padding: 12px 15px;
             border: 2px solid var(--border-color);
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             font-size: 1em;
             font-family: var(--font-family);
             box-sizing: border-box;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
         }
 
         input[type="text"]:focus,
         input[type="password"]:focus {
             outline: none;
             border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(33, 150, 243, 0.3);
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.02), rgba(33, 203, 243, 0.02));
         }
 
         .login-btn {
             width: 100%;
-            padding: 12px;
+            padding: 14px 20px;
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
             color: white;
             border: none;
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             font-size: 1.1em;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            margin-top: 10px;
+            transition: all 0.3s;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
         }
 
         .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(33, 150, 243, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(-1px);
         }
 
         .error-message {
             color: var(--error-text);
             background-color: var(--error-bg);
-            padding: 12px;
-            border-radius: var(--border-radius);
+            padding: 14px 16px;
+            border-radius: 8px;
             margin-bottom: 20px;
             display: none;
+            border-left: 4px solid var(--error-text);
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .info-box {
-            background-color: var(--success-bg);
+            background: linear-gradient(135deg, var(--success-bg) 0%, rgba(212, 237, 218, 0.5) 100%);
             color: var(--success-text);
-            padding: 15px;
-            border-radius: var(--border-radius);
-            margin-bottom: 20px;
+            padding: 18px;
+            border-radius: 8px;
+            margin-bottom: 25px;
             font-size: 0.9em;
+            border-left: 4px solid var(--success-text);
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.1);
         }
 
         .info-box h3 {
             margin-top: 0;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            font-weight: 700;
         }
 
         .user-item {
-            margin: 8px 0;
-            padding: 8px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 4px;
+            margin: 10px 0;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 6px;
         }
 
         .user-item strong {
@@ -170,25 +208,32 @@
         </form>
 
         <div style="margin-top: 20px; text-align: center; border-top: 1px solid var(--border-color); padding-top: 20px;">
-            <p style="margin: 0 0 10px 0; color: var(--text-color);">¿No tienes cuenta?</p>
-            <a href="signup.html" class="login-btn" style="display: inline-block; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); text-decoration: none; color: white;">📝 Crear Cuenta</a>
-            <button class="login-btn" onclick="loginAsGuest()" style="background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%); margin-top: 10px;">👤 Continuar como Invitado</button>
+            <p style="margin: 0 0 15px 0; color: var(--text-color);">¿No tienes cuenta?</p>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; width: 100%; box-sizing: border-box; align-items: center; max-width: 350px; margin-left: auto; margin-right: auto;">
+                <a href="signup.html" class="login-btn" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); text-decoration: none; color: white; padding: 14px 16px; font-size: 0.95em; font-weight: 700; width: 90%; max-width: 300px; box-sizing: border-box; border-radius: 8px; min-height: 44px; margin: 0 auto;">📝 Crear Cuenta</a>
+                <button class="login-btn" onclick="loginAsGuest()" style="background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%); padding: 14px 16px; font-size: 0.95em; font-weight: 700; width: 90%; max-width: 300px; box-sizing: border-box; min-height: 44px; border-radius: 8px; border: none; cursor: pointer; margin: 0 auto;">👤 Invitado</button>
+            </div>
+            <button class="login-btn" onclick="handleResetUsers()" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); padding: 12px 16px; font-size: 0.9em; width: 90%; max-width: 300px; font-weight: 700; box-sizing: border-box; min-height: 44px; border-radius: 8px; border: none; cursor: pointer; margin: 0 auto; display: flex; align-items: center; justify-content: center;">🔄 Resetear Usuarios</button>
         </div>
     </div>
 
     <script src="app.js"></script>
     <script>
-        // Inicializar usuarios al cargar la página
-        window.addEventListener('DOMContentLoaded', () => {
-            initializeUsers();
-            
-            const user = getCurrentUser();
-            if (user) {
-                if (user.role === 'guest') {
-                    window.location.href = 'browse.html';
-                } else {
-                    window.location.href = 'index.html';
+        // Inicializar base de datos al cargar
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await initDatabase();
+                
+                const user = getCurrentUser();
+                if (user) {
+                    if (user.role === 'guest') {
+                        window.location.href = 'browse.html';
+                    } else {
+                        window.location.href = 'index.html';
+                    }
                 }
+            } catch (error) {
+                console.error('Error inicializando BD:', error);
             }
         });
 
@@ -197,13 +242,21 @@
             window.location.href = 'browse.html';
         }
 
-        function handleLogin(event) {
+        async function handleResetUsers() {
+            if (confirm('⚠️ Esto va a resetear todos los usuarios a los valores por defecto. ¿Está seguro?')) {
+                resetUsers();
+                alert('✅ Usuarios reseteados correctamente:\n\n👤 Owner: owner / owner123\n👨‍💼 Admin: admin / admin123\n🔍 Inspector: tester / tester123\n💰 Tesorera: tesorera / tesorera123\n🛍️ Comprador: buyer / buyer123');
+                location.reload();
+            }
+        }
+
+        async function handleLogin(event) {
             event.preventDefault();
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            if (login(username, password)) {
-                const user = getCurrentUser();
+            const success = await login(username, password);
+            if (success) {
                 window.location.href = 'index.html';
             } else {
                 const errorDiv = document.getElementById('errorMessage');

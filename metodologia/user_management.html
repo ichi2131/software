@@ -2,7 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Gestión de Usuarios</title>
     <link rel="stylesheet" href="styles.css">
     <style>
@@ -66,40 +68,55 @@
 
         .button-group {
             display: flex;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .btn {
-            padding: 10px 15px;
+            padding: 12px 24px;
             border: none;
             border-radius: var(--border-radius);
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 700;
             transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            background: linear-gradient(135deg, #2196F3 0%, #21CBDB 100%);
             color: white;
         }
 
         .btn-primary:hover {
+            background: linear-gradient(135deg, #1976D2 0%, #1BA0B8 100%);
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
         }
 
         .btn-secondary {
-            background-color: var(--border-color);
-            color: var(--text-color);
+            background: linear-gradient(135deg, #90A4AE 0%, #B0BEC5 100%);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #78909C 0%, #90A4AE 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(144, 164, 174, 0.4);
         }
 
         .btn-danger {
-            background-color: var(--delete-color);
+            background: linear-gradient(135deg, #DC3545 0%, #E74C3C 100%);
             color: white;
         }
 
         .btn-danger:hover {
-            background-color: var(--delete-hover);
+            background: linear-gradient(135deg, #C82333 0%, #C0392B 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
         }
 
         .users-table {
@@ -232,8 +249,9 @@
 
     <!-- Header será renderizado por JavaScript -->
 
-    <nav>
-        <a href="index.html">← Volver</a>
+    <nav class="nav-links" style="display: flex; gap: 10px; margin: 20px 0; justify-content: flex-start;">
+        <a href="index.html" class="nav-link">🏠 Inicio</a>
+        <a href="index.html" class="nav-link" style="background: linear-gradient(135deg, #90A4AE 0%, #B0BEC5 100%); color: white;">← Volver</a>
     </nav>
 
     <div class="admin-container">
@@ -250,7 +268,7 @@
                 <strong>Nota:</strong> Aquí puedes crear nuevas cuentas para otros roles (Admin, Inspector, Tesorera, Comprador).
             </div>
 
-            <div class="form-row">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
                 <div class="form-group">
                     <label for="newFullName">Nombre Completo:</label>
                     <input type="text" id="newFullName" placeholder="Ej: Juan Pérez">
@@ -260,7 +278,9 @@
                     <label for="newUsername">Usuario:</label>
                     <input type="text" id="newUsername" placeholder="Ej: juanperez">
                 </div>
+            </div>
 
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
                 <div class="form-group">
                     <label for="newPassword">Contraseña:</label>
                     <input type="password" id="newPassword" placeholder="Contraseña segura">
@@ -293,21 +313,27 @@
 
     <script src="app.js"></script>
     <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            checkAuth();
-            const user = getCurrentUser();
-            document.getElementById('userName').textContent = user.fullName || user.username;
-            document.getElementById('userRole').textContent = user.role.toUpperCase();
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await initDatabase();
+                checkAuth();
+                const user = getCurrentUser();
+                document.getElementById('userName').textContent = user.fullName || user.username;
+                document.getElementById('userRole').textContent = user.role.toUpperCase();
 
-            // Renderizar header y footer
-            renderHeader();
-            renderFooter();
+                // Renderizar header y footer
+                renderHeader();
+                renderFooter();
 
-            if (user.role !== 'admin') {
-                window.location.href = 'index.html';
+                // PERMITIR ACCESO A OWNER Y ADMIN
+                if (user.role !== 'admin' && user.role !== 'owner') {
+                    window.location.href = 'index.html';
+                }
+
+                loadUsers();
+            } catch (error) {
+                console.error('Error:', error);
             }
-
-            loadUsers();
         });
 
         function loadUsers() {

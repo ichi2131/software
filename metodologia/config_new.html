@@ -2,7 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Configuración del Sistema</title>
     <link rel="stylesheet" href="styles.css">
     <style>
@@ -148,18 +150,23 @@
 
         .lock-form button {
             width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            padding: 14px 20px;
+            background: linear-gradient(135deg, #2196F3 0%, #21CBDB 100%);
             color: white;
             border: none;
             border-radius: var(--border-radius);
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
-            transition: transform 0.3s;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
         }
 
         .lock-form button:hover {
+            background: linear-gradient(135deg, #1976D2 0%, #1BA0B8 100%);
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
         }
 
         .lock-form .error {
@@ -170,26 +177,33 @@
 
         .tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--border-color);
+            gap: 15px;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #f0f0f0;
             overflow-x: auto;
         }
 
         .tab-button {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
             background: transparent;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 700;
             color: #666;
             transition: all 0.3s;
             border-bottom: 3px solid transparent;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.95em;
         }
 
         .tab-button.active {
             color: var(--primary-color);
             border-bottom-color: var(--primary-color);
+        }
+
+        .tab-button:hover {
+            color: var(--primary-color);
         }
 
         .tab-content {
@@ -482,24 +496,35 @@
         let configUnlocked = false;
         const CONFIG_PASSWORD = 'owner123';
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const user = getCurrentUser();
-            if (!user || user.role !== 'owner') {
-                window.location.href = 'index.html';
-                return;
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await initDatabase();
+                
+                const user = getCurrentUser();
+                if (!user || user.role !== 'owner') {
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                // Renderizar header y footer
+                renderHeader();
+                renderFooter();
+
+                // Mostrar información del usuario
+                document.getElementById('userName').textContent = user.fullName || user.username;
+                document.getElementById('userRole').textContent = user.role.toUpperCase();
+
+                // OWNER TIENE ACCESO DIRECTO SIN CONTRASEÑA
+                configUnlocked = true;
+                document.getElementById('lockScreen').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+
+                // Cargar configuración guardada
+                loadDesignConfig();
+                loadHeaderFooterConfig();
+            } catch (error) {
+                console.error('Error:', error);
             }
-
-            // Renderizar header y footer
-            renderHeader();
-            renderFooter();
-
-            // Mostrar información del usuario
-            document.getElementById('userName').textContent = user.fullName || user.username;
-            document.getElementById('userRole').textContent = user.role.toUpperCase();
-
-            // Cargar configuración guardada
-            loadDesignConfig();
-            loadHeaderFooterConfig();
         });
 
         function unlockConfig() {

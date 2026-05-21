@@ -1,0 +1,81 @@
+═══════════════════════════════════════════════════════════════════════════════
+
+    🚀 INICIA AQUÍ - Sistema de Inventario con Base de Datos
+
+═══════════════════════════════════════════════════════════════════════════════
+
+
+📍 UBICACIÓN DEL PROYECTO
+═══════════════════════════════════════════════════════════════════════════════
+
+C:\Users\shado\OneDrive\Desktop\chamba\metodologia
+
+
+⚡ OPCIÓN 1: INICIO AUTOMÁTICO (Recomendado)
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Haz doble clic en:
+   start_api.bat
+
+¡Listo! El sistema se inicia automáticamente.
+
+
+⚡ OPCIÓN 2: INICIO MANUAL (Terminal)
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Abre Terminal / Command Prompt
+2. Ve a: C:\Users\shado\OneDrive\Desktop\chamba\metodologia
+3. Escribe: python api.py
+4. Abre navegador en: http://localhost:8000/login.html
+
+
+🔐 USUARIO DE PRUEBA
+═══════════════════════════════════════════════════════════════════════════════
+
+Usuario:     owner
+Contraseña:  owner123
+
+(Hay otros usuarios disponibles: admin, tester, tesorera, buyer)
+
+
+✅ ¿QUÉ PASÓ?
+═══════════════════════════════════════════════════════════════════════════════
+
+Tu sistema se migró de localStorage (datos locales) a una base de datos real:
+
+ANTES:  Datos en el navegador → Se perdían
+AHORA:  Datos en base de datos → Persisten para siempre
+
+
+📚 DOCUMENTACIÓN
+═══════════════════════════════════════════════════════════════════════════════
+
+Elige la que te convenga:
+
+START_HERE_BD.md        ← Guía rápida de 5 minutos
+SETUP_GUIDE.txt         ← Guía completa con detalles
+ARCHITECTURE.txt        ← Diagramas técnicos
+DATABASE_SETUP.md       ← Documentación API
+
+
+📞 SI ALGO NO FUNCIONA
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Verifica Python:
+   python --version
+
+2. Instala dependencias:
+   python -m pip install -r requirements.txt
+
+3. Inicia API:
+   python api.py
+
+4. Abre:
+   http://localhost:5000/api/health
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+¡Listo! Tu sistema está funcionando con base de datos profesional 🎉
+
+═══════════════════════════════════════════════════════════════════════════════

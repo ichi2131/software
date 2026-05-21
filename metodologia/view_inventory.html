@@ -2,7 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Ver Inventario</title>
     <link rel="stylesheet" href="styles.css">
     <style>
@@ -53,33 +55,38 @@
     <div class="user-info">
         <span id="userName">Usuario</span>
         <span id="userRole" class="user-badge">Rol</span>
-        <a href="index.html" class="home-btn" style="background: var(--primary-color); color: white; border: none; padding: 5px 10px; border-radius: var(--border-radius); cursor: pointer; font-size: 0.9em; text-decoration: none; display: inline-block;">🏠 Inicio</a>
-        <button class="logout-btn" onclick="handleLogout()">Salir</button>
+        <a href="index.html" class="home-btn" style="background: linear-gradient(135deg, #2196F3 0%, #21CBDB 100%); color: white; border: none; padding: 8px 12px; border-radius: var(--border-radius); cursor: pointer; font-size: 0.9em; text-decoration: none; display: inline-block; font-weight: 600;">🏠 Inicio</a>
+        <button class="logout-btn" onclick="handleLogout()" style="background: linear-gradient(135deg, #DC3545 0%, #E74C3C 100%);">Salir</button>
     </div>
 
     <!-- Header será renderizado por JavaScript -->
 
-    <nav>
-        <a href="index.html">Inicio</a>
-        <a href="add_product.html" id="navAdd">Agregar Producto</a>
+    <nav class="nav-links">
+        <a href="index.html" class="nav-link">🏠 Inicio</a>
+        <a href="add_product.html" id="navAdd" class="nav-link">➕ Agregar Producto</a>
     </nav>
-    <h1>Inventario de Productos</h1>
-    <table id="inventoryTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Cantidad</th>
-                <th id="priceHeader">Precio</th>
-                <th>Categoría</th>
-                <th>Proveedor</th>
-                <th>Fecha Agregado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+    
+    <div class="container">
+        <h1 style="text-align: center; color: var(--primary-color); margin-bottom: 30px;">📦 Inventario de Productos</h1>
+        <div style="overflow-x: auto;">
+            <table id="inventoryTable" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Cantidad</th>
+                        <th id="priceHeader">Precio</th>
+                        <th>Categoría</th>
+                        <th>Proveedor</th>
+                        <th>Fecha Agregado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
 
     <script src="app.js"></script>
     <script>

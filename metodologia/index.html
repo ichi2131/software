@@ -2,7 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Sistema de Administración de Inventario</title>
     <link rel="stylesheet" href="styles.css">
     <style>
@@ -58,31 +60,48 @@
 
     <!-- Header será renderizado por JavaScript -->
 
-    <nav>
-        <a href="index.html" id="navHome">Inicio</a>
-        <a href="browse.html" id="navBrowse">🛍️ Comprar</a>
-        <a href="cart.html" id="navCart">🛒 Carrito</a>
-        <a href="add_product.html" id="navAdd">Agregar Producto</a>
-        <a href="view_inventory.html">Ver Inventario</a>
-        <a href="search_product.html" id="navSearch">Buscar Producto</a>
-        <a href="reports.html" id="navReports">Reportes</a>
-        <a href="config.html" id="navConfig">⚙️ Configuración</a>
-        <a href="user_management.html" id="navUsers">👥 Usuarios</a>
+    <nav class="nav-links">
+        <a href="index.html" class="nav-link" id="navHome">🏠 Inicio</a>
+        <a href="browse.html" class="nav-link" id="navBrowse">🛍️ Comprar</a>
+        <a href="cart.html" class="nav-link" id="navCart">🛒 Carrito</a>
+        <a href="add_product.html" class="nav-link" id="navAdd">➕ Agregar</a>
+        <a href="view_inventory.html" class="nav-link">📦 Inventario</a>
+        <a href="search_product.html" class="nav-link" id="navSearch">🔍 Buscar</a>
+        <a href="reports.html" class="nav-link" id="navReports">📊 Reportes</a>
+        <a href="config.html" class="nav-link" id="navConfig">⚙️ Configuración</a>
+        <a href="user_management.html" class="nav-link" id="navUsers">👥 Usuarios</a>
     </nav>
+    
     <div class="container">
         <h2>Bienvenido al Sistema de Inventario</h2>
-        <p id="userWelcome">Utilice el menú de navegación para gestionar su inventario.</p>
-        <div id="stats">
-            <h3>Estadísticas Rápidas</h3>
-            <p id="statsTotal">Total de productos: <span id="totalProducts">0</span></p>
-            <p id="statsValue">Valor total del inventario: $<span id="totalValue">0.00</span></p>
-            <p id="statsLow">Productos con stock bajo: <span id="lowStock">0</span></p>
-            <div style="margin-top: 15px;">
-                <button onclick="openCharts()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 20px; border: none; border-radius: var(--border-radius); cursor: pointer; font-weight: bold;">📊 Ver Gráficos</button>
+        <p id="userWelcome" style="font-size: 1.1em; color: #666;">Utilice el menú de navegación para gestionar su inventario.</p>
+        
+        <!-- Estadísticas en Grid -->
+        <div class="stats-grid" id="stats">
+            <div class="stat-box">
+                <div style="font-size: 1.8em;">📦</div>
+                <div class="stat-label">Total de Productos</div>
+                <div class="stat-value" id="totalProducts">0</div>
+            </div>
+            <div class="stat-box" id="statsValue" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div style="font-size: 1.8em;">💰</div>
+                <div class="stat-label">Valor Total</div>
+                <div class="stat-value">$<span id="totalValue">0.00</span></div>
+            </div>
+            <div class="stat-box" id="statsLow" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <div style="font-size: 1.8em;">⚠️</div>
+                <div class="stat-label">Stock Bajo</div>
+                <div class="stat-value" id="lowStock">0</div>
             </div>
         </div>
-        <p>Funciones disponibles:</p>
-        <ul id="functionsList">
+        
+        <!-- Botones de Acción -->
+        <div class="action-buttons">
+            <button class="action-button btn-blue" onclick="openCharts()">📊 Ver Gráficos</button>
+        </div>
+        
+        <p style="margin-top: 35px; font-size: 1.1em; font-weight: 600; color: var(--primary-color);">Funciones disponibles:</p>
+        <div class="function-grid" id="functionsList">
             <li id="func-add">Agregar nuevos productos con detalles como nombre, descripción, cantidad, precio, categoría.</li>
             <li id="func-edit">Ver y editar la lista completa de productos.</li>
             <li id="func-search">Buscar productos por nombre o categoría.</li>
@@ -91,62 +110,69 @@
     </div>
     <script src="app.js"></script>
     <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            checkAuth();
-            const user = getCurrentUser();
-            
-            // Renderizar header y footer
-            renderHeader();
-            renderFooter();
-            
-            // Mostrar información del usuario
-            document.getElementById('userName').textContent = user.fullName || user.username;
-            document.getElementById('userRole').textContent = user.role.toUpperCase();
-            
-            // Mensaje personalizado
-            const roleMsg = {
-                'admin': 'Bienvenido Administrador. Tienes acceso completo al sistema.',
-                'tester': 'Bienvenido Inspector. Puedes ver el inventario y stock.',
-                'tesorera': 'Bienvenida Tesorera. Puedes ver precios y reportes financieros.',
-                'buyer': 'Bienvenido Comprador. Explora nuestro catálogo.',
-                'guest': 'Bienvenido Invitado. Explora nuestro catálogo sin registro.'
-            };
-            document.getElementById('userWelcome').textContent = roleMsg[user.role] || 'Bienvenido';
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Inicializar base de datos
+                await initDatabase();
+                checkAuth();
+                const user = getCurrentUser();
+                
+                // Renderizar header y footer
+                renderHeader();
+                renderFooter();
+                
+                // Mostrar información del usuario
+                document.getElementById('userName').textContent = user.fullName || user.username;
+                document.getElementById('userRole').textContent = user.role.toUpperCase();
+                
+                // Mensaje personalizado
+                const roleMsg = {
+                    'owner': 'Bienvenido Propietario. Tienes acceso total al sistema y control total.',
+                    'admin': 'Bienvenido Administrador. Tienes acceso completo al sistema.',
+                    'tester': 'Bienvenido Inspector. Puedes ver el inventario y stock.',
+                    'tesorera': 'Bienvenida Tesorera. Puedes ver precios y reportes financieros.',
+                    'buyer': 'Bienvenido Comprador. Explora nuestro catálogo.',
+                    'guest': 'Bienvenido Invitado. Explora nuestro catálogo sin registro.'
+                };
+                document.getElementById('userWelcome').textContent = roleMsg[user.role] || 'Bienvenido';
 
-            // Controlar visibilidad de menú según rol
-            if (!hasPermission('add_product')) {
-                document.getElementById('navAdd').style.display = 'none';
-                document.getElementById('func-add').style.display = 'none';
-            }
-            if (!hasPermission('edit_product')) {
-                document.getElementById('func-edit').style.display = 'none';
-            }
-            if (!hasPermission('view_prices')) {
-                document.getElementById('statsValue').style.display = 'none';
-            }
-            if (!hasPermission('view_reports')) {
-                document.getElementById('navReports').style.display = 'none';
-                document.getElementById('func-reports').style.display = 'none';
-            }
-            if (!hasPermission('view_config') && user.role !== 'admin') {
-                document.getElementById('navConfig').style.display = 'none';
-            }
+                // Controlar visibilidad de menú según rol
+                if (!hasPermission('add_product')) {
+                    document.getElementById('navAdd').style.display = 'none';
+                    document.getElementById('func-add').style.display = 'none';
+                }
+                if (!hasPermission('edit_product')) {
+                    document.getElementById('func-edit').style.display = 'none';
+                }
+                if (!hasPermission('view_prices')) {
+                    document.getElementById('statsValue').style.display = 'none';
+                }
+                if (!hasPermission('view_reports')) {
+                    document.getElementById('navReports').style.display = 'none';
+                    document.getElementById('func-reports').style.display = 'none';
+                }
+                if (!hasPermission('view_config') && user.role !== 'admin') {
+                    document.getElementById('navConfig').style.display = 'none';
+                }
 
-            // Ocultar opciones de admin para no-admins/owner
-            if (user.role !== 'admin' && user.role !== 'owner') {
-                document.getElementById('navUsers').style.display = 'none';
-                document.getElementById('navAdd').style.display = 'none';
-                document.getElementById('navSearch').style.display = 'none';
-                document.getElementById('navConfig').style.display = 'none';
-            }
+                // Ocultar opciones de admin para no-admins/owner
+                if (user.role !== 'admin' && user.role !== 'owner') {
+                    document.getElementById('navUsers').style.display = 'none';
+                    document.getElementById('navAdd').style.display = 'none';
+                    document.getElementById('navSearch').style.display = 'none';
+                    document.getElementById('navConfig').style.display = 'none';
+                }
 
-            // Mostrar opción de compra para buyer e invitados
-            if (!hasPermission('add_to_cart')) {
-                document.getElementById('navBrowse').style.display = 'none';
-                document.getElementById('navCart').style.display = 'none';
-            }
+                // Mostrar opción de compra para buyer e invitados
+                if (!hasPermission('add_to_cart')) {
+                    document.getElementById('navBrowse').style.display = 'none';
+                    document.getElementById('navCart').style.display = 'none';
+                }
 
-            loadStats();
+                loadStats();
+            } catch (error) {
+                console.error('Error inicializando BD:', error);
+            }
         });
 
         function loadStats() {
@@ -170,21 +196,66 @@
             // Exportar datos del inventario
             exportInventoryData();
             
-            // Abrir gráficos (si existen)
-            const chartFile = 'inventory_chart.html';
+            // Intentar ejecutar el script Python automáticamente
+            executeInventoryCharts();
             
-            // Verificar si el archivo existe con fetch
-            fetch(chartFile)
-                .then(response => {
-                    if (response.ok) {
-                        window.open(chartFile, '_blank');
-                    } else {
-                        alert('❌ Los gráficos no están generados yet. Ejecuta: python inventory_charts.py');
+            // Esperar un momento y abrir los gráficos
+            setTimeout(() => {
+                window.open('inventory_chart.html', '_blank');
+            }, 1000);
+        }
+        
+        function executeInventoryCharts() {
+            // Mostrar mensaje de carga
+            const message = document.createElement('div');
+            message.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+                z-index: 10000;
+                text-align: center;
+            `;
+            message.innerHTML = `
+                <div style="font-size: 2em; margin-bottom: 10px;">📊</div>
+                <p style="margin: 0;">Generando gráficos de inventario...</p>
+                <p style="font-size: 0.9em; color: #666; margin: 10px 0 0 0;">Esto puede tomar unos segundos</p>
+            `;
+            document.body.appendChild(message);
+            
+            // Intentar ejecutar el generador de gráficos
+            fetch('run_charts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(() => {
+                setTimeout(() => {
+                    if (document.body.contains(message)) {
+                        message.remove();
                     }
-                })
-                .catch(() => {
-                    alert('📊 Para ver gráficos:\n1. Abre terminal/CMD en la carpeta del proyecto\n2. Ejecuta: python inventory_charts.py\n3. Se abrirá inventory_chart.html');
-                });
+                }, 1500);
+            })
+            .catch(() => {
+                // Si falla, simplemente continuar
+                console.log('Ejecutar manualmente: python inventory_charts.py');
+                setTimeout(() => {
+                    if (document.body.contains(message)) {
+                        message.innerHTML = `
+                            <div style="font-size: 2em; margin-bottom: 10px;">📝</div>
+                            <p style="margin: 0; color: #d9534f;"><strong>Nota:</strong></p>
+                            <p style="font-size: 0.9em; color: #666; margin: 10px 0 0 0;">Para generar gráficos, ejecuta en terminal:</p>
+                            <code style="display: block; margin-top: 10px; background: #f5f5f5; padding: 10px; border-radius: 5px;">python inventory_charts.py</code>
+                            <button onclick="this.parentElement.parentElement.remove()" style="margin-top: 15px; padding: 8px 20px; background: #5cb85c; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+                        `;
+                    }
+                }, 1500);
+            });
         }
     </script>
 </body>

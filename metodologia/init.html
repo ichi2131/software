@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Inicializando Sistema...</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #2196F3 0%, #21C3F3 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            text-align: center;
+            background: white;
+            padding: 50px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 400px;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2196F3;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        h1 {
+            color: #333;
+            margin: 20px 0 10px;
+            font-size: 1.5em;
+        }
+        
+        p {
+            color: #666;
+            font-size: 0.95em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="spinner"></div>
+        <h1>Inicializando Sistema</h1>
+        <p>Por favor espera mientras se carga la base de datos...</p>
+    </div>
+    
+    <script src="app.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Inicializar base de datos
+                await initDatabase();
+                
+                // Redirigir a login
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Error:', error);
+                document.querySelector('h1').textContent = '❌ Error';
+                document.querySelector('p').textContent = 'No se pudo inicializar el sistema. Recarga la página.';
+            }
+        });
+    </script>
+</body>
+</html>

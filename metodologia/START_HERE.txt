@@ -1,0 +1,52 @@
+🚀 INICIAR AQUÍ
+
+═══════════════════════════════════════════════════════════════════════════════
+
+OPCIÓN 1: DOBLE CLICK (MÁS FÁCIL) ✅
+─────────────────────────────────────────────────────────────────────────────
+  1. Busca el archivo: start_server.bat
+  2. Doble click
+  3. Se abre automáticamente
+
+OPCIÓN 2: COMANDO
+─────────────────────────────────────────────────────────────────────────────
+  python server.py
+
+OPCIÓN 3: POWERSHELL
+─────────────────────────────────────────────────────────────────────────────
+  .\start_server.ps1
+
+═══════════════════════════════════════════════════════════════════════════════
+
+CREDENCIALES DE PRUEBA
+
+Owner:      owner / owner123 (Acceso Total) ✅ NUEVO
+Admin:      admin / admin123
+Inspector:  tester / tester123
+Tesorera:   tesorera / tesorera123
+Comprador:  buyer / buyer123
+
+═══════════════════════════════════════════════════════════════════════════════
+
+ACCEDER A:
+
+http://localhost:8000
+
+═══════════════════════════════════════════════════════════════════════════════
+
+CAMBIOS PRINCIPALES:
+
+✅ v5: Owner funciona + Gráficos automáticos
+✅ v6: Diseño mejorado (moderno, profesional, responsive)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+DOCUMENTACIÓN:
+
+Para entender versiones:   CHANGELOG.md
+Para cambios v6:           UPDATE_v6.md
+Para cambios v5:           UPDATE_v5.md
+Para guía rápida:          QUICK_FIX_GUIDE.txt
+Para índice:               VERSIONS_INDEX.md
+
+═══════════════════════════════════════════════════════════════════════════════

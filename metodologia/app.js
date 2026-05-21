@@ -1,35 +1,143 @@
-// app.js - Funciones comunes para el sistema de inventario
+// app.js - Sistema de Inventario con IndexedDB (Auto-inicialización)
 
-// ============ AUTENTICACIÓN Y AUTORIZACIÓN ============
+// ============ BASE DE DATOS INDEXEDDB ============
+let db;
+const DB_NAME = 'InventoryDB';
+const DB_VERSION = 1;
+
+function initDatabase() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+            db = request.result;
+            resolve(db);
+        };
+        
+        request.onupgradeneeded = (event) => {
+            db = event.target.result;
+            
+            // Crear tabla de usuarios
+            if (!db.objectStoreNames.contains('users')) {
+                db.createObjectStore('users', { keyPath: 'id' });
+            }
+            
+            // Crear tabla de productos
+            if (!db.objectStoreNames.contains('products')) {
+                db.createObjectStore('products', { keyPath: 'id' });
+            }
+            
+            // Crear tabla de carrito
+            if (!db.objectStoreNames.contains('cart', { keyPath: 'id', autoIncrement: true })) {
+                db.createObjectStore('cart', { keyPath: 'id', autoIncrement: true });
+            }
+            
+            // Insertar datos por defecto
+            setTimeout(() => {
+                insertDefaultData();
+            }, 100);
+        };
+    });
+}
+
+function insertDefaultData() {
+    const transaction = db.transaction(['users', 'products'], 'readwrite');
+    
+    // Insertar usuarios
+    const defaultUsers = [
+        { id: 1, username: 'owner', password: 'owner123', role: 'owner', fullName: 'Owner' },
+        { id: 2, username: 'admin', password: 'admin123', role: 'admin', fullName: 'Administrador' },
+        { id: 3, username: 'tester', password: 'tester123', role: 'tester', fullName: 'Inspector' },
+        { id: 4, username: 'tesorera', password: 'tesorera123', role: 'tesorera', fullName: 'Tesorera' },
+        { id: 5, username: 'buyer', password: 'buyer123', role: 'buyer', fullName: 'Comprador' }
+    ];
+    
+    const usersStore = transaction.objectStore('users');
+    defaultUsers.forEach(user => usersStore.put(user));
+    
+    // Insertar productos
+    const defaultProducts = [
+        { id: 1, name: 'Laptop Dell XPS', description: 'Laptop de alto rendimiento', quantity: 5, price: 800, category: 'Electrónicos' },
+        { id: 2, name: 'Mouse Logitech MX', description: 'Mouse inalámbrico de precisión', quantity: 50, price: 25, category: 'Accesorios' },
+        { id: 3, name: 'Teclado Mecánico', description: 'Teclado gaming RGB', quantity: 30, price: 120, category: 'Accesorios' },
+        { id: 4, name: 'Monitor LG 27" 4K', description: 'Monitor ultra HD', quantity: 8, price: 300, category: 'Electrónicos' },
+        { id: 5, name: 'Camiseta Algodón', description: 'Camiseta 100% algodón', quantity: 100, price: 20, category: 'Ropa' },
+        { id: 6, name: 'Pantalón Denim', description: 'Pantalón blue jean', quantity: 75, price: 40, category: 'Ropa' },
+        { id: 7, name: 'Arroz Premium', description: 'Arroz basmati 5kg', quantity: 200, price: 2, category: 'Alimentos' },
+        { id: 8, name: 'Aceite de Oliva', description: 'Aceite premium 1L', quantity: 50, price: 8, category: 'Alimentos' }
+    ];
+    
+    const productsStore = transaction.objectStore('products');
+    defaultProducts.forEach(product => productsStore.put(product));
+}
+
+function getDefaultUsers() {
+    return [
+        { id: 1, username: 'owner', password: 'owner123', role: 'owner', fullName: 'Owner' },
+        { id: 2, username: 'admin', password: 'admin123', role: 'admin', fullName: 'Administrador' },
+        { id: 3, username: 'tester', password: 'tester123', role: 'tester', fullName: 'Inspector' },
+        { id: 4, username: 'tesorera', password: 'tesorera123', role: 'tesorera', fullName: 'Tesorera' },
+        { id: 5, username: 'buyer', password: 'buyer123', role: 'buyer', fullName: 'Comprador' }
+    ];
+}
+
 function initializeUsers() {
-    const users = JSON.parse(localStorage.getItem('users')) || null;
-    if (!users) {
-        const defaultUsers = [
-            { id: 1, username: 'owner', password: 'owner123', role: 'owner', fullName: 'Owner' },
-            { id: 2, username: 'admin', password: 'admin123', role: 'admin', fullName: 'Administrador' },
-            { id: 3, username: 'tester', password: 'tester123', role: 'tester', fullName: 'Inspector' },
-            { id: 4, username: 'tesorera', password: 'tesorera123', role: 'tesorera', fullName: 'Tesorera' },
-            { id: 5, username: 'buyer', password: 'buyer123', role: 'buyer', fullName: 'Comprador' }
-        ];
-        localStorage.setItem('users', JSON.stringify(defaultUsers));
-    }
+    // Ya se inicializa en IndexedDB
+}
+
+function resetUsers() {
+    const transaction = db.transaction('users', 'readwrite');
+    const store = transaction.objectStore('users');
+    store.clear();
+    
+    const defaultUsers = getDefaultUsers();
+    defaultUsers.forEach(user => store.put(user));
 }
 
 function initializeProducts() {
-    const products = JSON.parse(localStorage.getItem('products')) || null;
-    if (!products || products.length === 0) {
-        const defaultProducts = [
-            { id: 1, name: 'Laptop Dell XPS', description: 'Laptop de alto rendimiento', quantity: 5, price: 800, category: 'Electrónicos' },
-            { id: 2, name: 'Mouse Logitech MX', description: 'Mouse inalámbrico de precisión', quantity: 50, price: 25, category: 'Accesorios' },
-            { id: 3, name: 'Teclado Mecánico', description: 'Teclado gaming RGB', quantity: 30, price: 120, category: 'Accesorios' },
-            { id: 4, name: 'Monitor LG 27" 4K', description: 'Monitor ultra HD', quantity: 8, price: 300, category: 'Electrónicos' },
-            { id: 5, name: 'Camiseta Algodón', description: 'Camiseta 100% algodón', quantity: 100, price: 20, category: 'Ropa' },
-            { id: 6, name: 'Pantalón Denim', description: 'Pantalón blue jean', quantity: 75, price: 40, category: 'Ropa' },
-            { id: 7, name: 'Arroz Premium', description: 'Arroz basmati 5kg', quantity: 200, price: 2, category: 'Alimentos' },
-            { id: 8, name: 'Aceite de Oliva', description: 'Aceite premium 1L', quantity: 50, price: 8, category: 'Alimentos' }
-        ];
-        localStorage.setItem('products', JSON.stringify(defaultProducts));
-    }
+    // Ya se inicializa en IndexedDB
+}
+
+function resetProducts() {
+    const transaction = db.transaction('products', 'readwrite');
+    const store = transaction.objectStore('products');
+    store.clear();
+    
+    const defaultProducts = [
+        { id: 1, name: 'Laptop Dell XPS', description: 'Laptop de alto rendimiento', quantity: 5, price: 800, category: 'Electrónicos' },
+        { id: 2, name: 'Mouse Logitech MX', description: 'Mouse inalámbrico de precisión', quantity: 50, price: 25, category: 'Accesorios' },
+        { id: 3, name: 'Teclado Mecánico', description: 'Teclado gaming RGB', quantity: 30, price: 120, category: 'Accesorios' },
+        { id: 4, name: 'Monitor LG 27" 4K', description: 'Monitor ultra HD', quantity: 8, price: 300, category: 'Electrónicos' },
+        { id: 5, name: 'Camiseta Algodón', description: 'Camiseta 100% algodón', quantity: 100, price: 20, category: 'Ropa' },
+        { id: 6, name: 'Pantalón Denim', description: 'Pantalón blue jean', quantity: 75, price: 40, category: 'Ropa' },
+        { id: 7, name: 'Arroz Premium', description: 'Arroz basmati 5kg', quantity: 200, price: 2, category: 'Alimentos' },
+        { id: 8, name: 'Aceite de Oliva', description: 'Aceite premium 1L', quantity: 50, price: 8, category: 'Alimentos' }
+    ];
+    
+    defaultProducts.forEach(product => store.put(product));
+}
+
+// ============ OPERACIONES DE USUARIOS ============
+function login(username, password) {
+    return new Promise((resolve) => {
+        const transaction = db.transaction('users', 'readonly');
+        const store = transaction.objectStore('users');
+        const request = store.getAll();
+        
+        request.onsuccess = () => {
+            const users = request.result;
+            const user = users.find(u => u.username === username && u.password === password);
+            if (user) {
+                const userData = { ...user };
+                delete userData.password;
+                setCurrentUser(userData);
+                resolve(true);
+            } else {
+                resolve(false);
+            }
+        };
+    });
 }
 
 function getCurrentUser() {
@@ -37,24 +145,16 @@ function getCurrentUser() {
 }
 
 function setCurrentUser(user) {
-    localStorage.setItem('currentUser', JSON.stringify(user));
+    if (user) {
+        localStorage.setItem('currentUser', JSON.stringify(user));
+    } else {
+        localStorage.removeItem('currentUser');
+    }
 }
 
 function loginGuest() {
     const guestUser = { id: 999, username: 'guest', role: 'guest', fullName: 'Invitado' };
     setCurrentUser(guestUser);
-}
-
-function login(username, password) {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const user = users.find(u => u.username === username && u.password === password);
-    if (user) {
-        const userData = { ...user };
-        delete userData.password;
-        setCurrentUser(userData);
-        return true;
-    }
-    return false;
 }
 
 function logout() {
@@ -71,8 +171,8 @@ function hasPermission(permission) {
     if (!user) return false;
     
     const permissions = {
-        'owner': ['view_inventory', 'edit_product', 'delete_product', 'add_product', 'view_reports', 'view_users', 'view_config', 'manage_users'],
-        'admin': ['view_inventory', 'edit_product', 'delete_product', 'add_product', 'view_reports', 'view_users', 'view_config', 'manage_users'],
+        'owner': ['view_inventory', 'edit_product', 'delete_product', 'add_product', 'view_reports', 'view_prices', 'view_users', 'view_config', 'manage_users'],
+        'admin': ['view_inventory', 'edit_product', 'delete_product', 'add_product', 'view_reports', 'view_prices', 'view_users', 'view_config', 'manage_users'],
         'tester': ['view_inventory', 'view_stock'],
         'tesorera': ['view_inventory', 'view_prices', 'view_reports'],
         'buyer': ['view_inventory', 'view_prices', 'add_to_cart', 'view_cart'],
@@ -90,12 +190,195 @@ function checkAuth() {
 
 // ============ GESTIÓN DE USUARIOS ============
 function getAllUsers() {
-    return JSON.parse(localStorage.getItem('users')) || [];
+    return new Promise((resolve) => {
+        const transaction = db.transaction('users', 'readonly');
+        const store = transaction.objectStore('users');
+        const request = store.getAll();
+        
+        request.onsuccess = () => {
+            resolve(request.result);
+        };
+    });
 }
 
 function usernameExists(username) {
-    const users = getAllUsers();
-    return users.some(u => u.username.toLowerCase() === username.toLowerCase());
+    return new Promise((resolve) => {
+        const transaction = db.transaction('users', 'readonly');
+        const store = transaction.objectStore('users');
+        const request = store.getAll();
+        
+        request.onsuccess = () => {
+            const exists = request.result.some(u => u.username.toLowerCase() === username.toLowerCase());
+            resolve(exists);
+        };
+    });
+}
+
+function addUser(username, password, role, fullName) {
+    return new Promise((resolve) => {
+        const transaction = db.transaction('users', 'readwrite');
+        const store = transaction.objectStore('users');
+        
+        const getRequest = store.getAll();
+        getRequest.onsuccess = () => {
+            const users = getRequest.result;
+            const newId = Math.max(...users.map(u => u.id), 0) + 1;
+            
+            const newUser = { id: newId, username, password, role, fullName };
+            const putRequest = store.put(newUser);
+            
+            putRequest.onsuccess = () => {
+                resolve({ id: newId, username, role, fullName });
+            };
+            putRequest.onerror = () => resolve(null);
+        };
+    });
+}
+
+// ============ GESTIÓN DE PRODUCTOS ============
+function getAllProducts() {
+    return new Promise((resolve) => {
+        const transaction = db.transaction('products', 'readonly');
+        const store = transaction.objectStore('products');
+        const request = store.getAll();
+        
+        request.onsuccess = () => {
+            resolve(request.result);
+        };
+    });
+}
+
+function getProduct(productId) {
+    return new Promise((resolve) => {
+        const transaction = db.transaction('products', 'readonly');
+        const store = transaction.objectStore('products');
+        const request = store.get(productId);
+        
+        request.onsuccess = () => {
+            resolve(request.result || null);
+        };
+    });
+}
+
+function addProduct(name, description, quantity, price, category) {
+    return new Promise((resolve) => {
+        const transaction = db.transaction('products', 'readwrite');
+        const store = transaction.objectStore('products');
+        
+        const getRequest = store.getAll();
+        getRequest.onsuccess = () => {
+            const products = getRequest.result;
+            const newId = Math.max(...products.map(p => p.id), 0) + 1;
+            
+            const newProduct = { id: newId, name, description, quantity, price, category };
+            const putRequest = store.put(newProduct);
+            
+            putRequest.onsuccess = () => {
+                resolve(newProduct);
+            };
+            putRequest.onerror = () => resolve(null);
+        };
+    });
+}
+
+function updateProduct(productId, updates) {
+    return new Promise((resolve) => {
+        const transaction = db.transaction('products', 'readwrite');
+        const store = transaction.objectStore('products');
+        
+        const getRequest = store.get(productId);
+        getRequest.onsuccess = () => {
+            const product = getRequest.result;
+            if (product) {
+                const updated = { ...product, ...updates };
+                const putRequest = store.put(updated);
+                putRequest.onsuccess = () => resolve(true);
+                putRequest.onerror = () => resolve(false);
+            } else {
+                resolve(false);
+            }
+        };
+    });
+}
+
+function deleteProduct(productId) {
+    return new Promise((resolve) => {
+        const transaction = db.transaction('products', 'readwrite');
+        const store = transaction.objectStore('products');
+        const request = store.delete(productId);
+        
+        request.onsuccess = () => resolve(true);
+        request.onerror = () => resolve(false);
+    });
+}
+
+// ============ GESTIÓN DE CARRITO ============
+function getCart() {
+    return new Promise((resolve) => {
+        const transaction = db.transaction('cart', 'readonly');
+        const store = transaction.objectStore('cart');
+        const request = store.getAll();
+        
+        request.onsuccess = () => {
+            resolve(request.result);
+        };
+    });
+}
+
+function addToCart(productId, quantity) {
+    return new Promise((resolve) => {
+        getProduct(productId).then(product => {
+            if (!product) {
+                resolve(false);
+                return;
+            }
+            
+            const transaction = db.transaction('cart', 'readwrite');
+            const store = transaction.objectStore('cart');
+            
+            const getRequest = store.getAll();
+            getRequest.onsuccess = () => {
+                const items = getRequest.result;
+                const existing = items.find(item => item.product_id === productId);
+                
+                if (existing) {
+                    existing.quantity += quantity;
+                    store.put(existing);
+                } else {
+                    const newItem = {
+                        product_id: productId,
+                        quantity,
+                        price: product.price,
+                        name: product.name
+                    };
+                    store.add(newItem);
+                }
+                
+                resolve(true);
+            };
+        });
+    });
+}
+
+function removeFromCart(cartItemId) {
+    return new Promise((resolve) => {
+        const transaction = db.transaction('cart', 'readwrite');
+        const store = transaction.objectStore('cart');
+        const request = store.delete(cartItemId);
+        
+        request.onsuccess = () => resolve(true);
+        request.onerror = () => resolve(false);
+    });
+}
+
+function clearCart() {
+    return new Promise((resolve) => {
+        const transaction = db.transaction('cart', 'readwrite');
+        const store = transaction.objectStore('cart');
+        const request = store.clear();
+        
+        request.onsuccess = () => resolve(true);
+    });
 }
 
 function registerUser(username, password, fullName, role) {

@@ -2,7 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Reportes</title>
     <link rel="stylesheet" href="styles.css">
     <style>
@@ -43,49 +45,60 @@
     <div class="user-info">
         <span id="userName">Usuario</span>
         <span id="userRole" class="user-badge">Rol</span>
-        <a href="index.html" class="home-btn" style="background: var(--primary-color); color: white; border: none; padding: 5px 10px; border-radius: var(--border-radius); cursor: pointer; font-size: 0.9em; text-decoration: none; display: inline-block;">🏠 Inicio</a>
-        <button class="logout-btn" onclick="handleLogout()">Salir</button>
+        <a href="index.html" class="home-btn" style="background: linear-gradient(135deg, #2196F3 0%, #21CBDB 100%); color: white; border: none; padding: 8px 12px; border-radius: var(--border-radius); cursor: pointer; font-size: 0.9em; text-decoration: none; display: inline-block; font-weight: 600;">🏠 Inicio</a>
+        <button class="logout-btn" onclick="handleLogout()" style="background: linear-gradient(135deg, #DC3545 0%, #E74C3C 100%);">Salir</button>
     </div>
 
     <!-- Header será renderizado por JavaScript -->
 
-    <nav>
-        <a href="index.html">Inicio</a>
-        <a href="view_inventory.html">Ver Inventario</a>
+    <nav class="nav-links">
+        <a href="index.html" class="nav-link">🏠 Inicio</a>
+        <a href="view_inventory.html" class="nav-link">📦 Ver Inventario</a>
     </nav>
-    <h1>Reportes de Inventario</h1>
+    
+    <div class="container">
+        <h1 style="text-align: center; color: var(--primary-color); margin-bottom: 35px;">📊 Reportes de Inventario</h1>
 
-    <div class="report">
-        <h2>Productos con Stock Bajo (menos de 10 unidades)</h2>
-        <table id="lowStockTable">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Cantidad</th>
-                    <th>Categoría</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
+        <div class="card-grid">
+            <div class="card-item">
+                <h3>⚠️ Stock Bajo</h3>
+                <p style="font-size: 0.9em; color: #666;">Productos con menos de 10 unidades</p>
+                <div style="overflow-x: auto;">
+                    <table id="lowStockTable" style="width: 100%; margin-top: 15px;">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left;">Nombre</th>
+                                <th style="text-align: left;">Cantidad</th>
+                                <th style="text-align: left;">Categoría</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
 
-    <div class="report">
-        <h2>Valor Total del Inventario</h2>
-        <p id="totalValue">Calculando...</p>
-    </div>
+            <div class="card-item">
+                <h3>💰 Valor Total</h3>
+                <p style="font-size: 0.9em; color: #666;">Valor total del inventario</p>
+                <div id="totalValue" style="font-size: 2em; color: var(--primary-color); font-weight: 700; margin-top: 25px;">Calculando...</div>
+            </div>
+        </div>
 
-    <div class="report">
-        <h2>Productos por Categoría</h2>
-        <table id="categoryTable">
-            <thead>
-                <tr>
-                    <th>Categoría</th>
-                    <th>Cantidad de Productos</th>
-                    <th>Valor Total</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+        <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-top: 25px;">
+            <h3 style="color: var(--primary-color); margin-top: 0;">📂 Productos por Categoría</h3>
+            <div style="overflow-x: auto;">
+                <table id="categoryTable" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left;">Categoría</th>
+                            <th style="text-align: left;">Cantidad</th>
+                            <th style="text-align: left;">Valor Total</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script src="app.js"></script>

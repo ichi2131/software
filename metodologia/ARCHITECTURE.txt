@@ -1,0 +1,349 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                                                                               ║
+║                    ARQUITECTURA DEL SISTEMA DE INVENTARIO                     ║
+║                                                                               ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+
+1️⃣  CAPA DE PRESENTACIÓN (Frontend)
+═══════════════════════════════════════════════════════════════════════════════
+
+                          NAVEGADOR WEB
+                        http://localhost:8000
+                            
+    ┌─────────────────────────────────────────────────────┐
+    │                                                     │
+    │  ┌─────────────┐  ┌──────────────┐  ┌────────────┐ │
+    │  │ login.html  │  │ index.html   │  │ browse.html│ │
+    │  └─────────────┘  └──────────────┘  └────────────┘ │
+    │                                                     │
+    │  ┌──────────────────────────────────────────────┐   │
+    │  │        styles.css (diseño)                   │   │
+    │  └──────────────────────────────────────────────┘   │
+    │                                                     │
+    │  ┌──────────────────────────────────────────────┐   │
+    │  │   api-client.js  (cliente de API)            │   │
+    │  │   ├─ login()                                 │   │
+    │  │   ├─ getAllProducts()                        │   │
+    │  │   ├─ addToCart()                             │   │
+    │  │   └─ (20+ funciones más)                     │   │
+    │  └──────────────────────────────────────────────┘   │
+    │                                                     │
+    └─────────────────────────────────────────────────────┘
+                            ↕
+                     fetch() HTTP/REST
+                            ↕
+
+
+2️⃣  CAPA DE API (Intermediario)
+═══════════════════════════════════════════════════════════════════════════════
+
+                      SERVIDOR FLASK
+                   http://localhost:5000
+                   
+    ┌──────────────────────────────────────────────────┐
+    │            api.py (Flask Application)           │
+    │                                                  │
+    │  ┌────────────────────────────────────────────┐  │
+    │  │       Autenticación                        │  │
+    │  │  POST   /api/login                         │  │
+    │  │  POST   /api/logout                        │  │
+    │  │  POST   /api/signup                        │  │
+    │  │  GET    /api/current-user                  │  │
+    │  └────────────────────────────────────────────┘  │
+    │                                                  │
+    │  ┌────────────────────────────────────────────┐  │
+    │  │       Gestión de Usuarios (Admin)          │  │
+    │  │  GET    /api/users                         │  │
+    │  │  PUT    /api/users/<id>                    │  │
+    │  │  DELETE /api/users/<id>                    │  │
+    │  │  POST   /api/reset-users                   │  │
+    │  └────────────────────────────────────────────┘  │
+    │                                                  │
+    │  ┌────────────────────────────────────────────┐  │
+    │  │       Gestión de Productos                 │  │
+    │  │  GET    /api/products                      │  │
+    │  │  POST   /api/products                      │  │
+    │  │  PUT    /api/products/<id>                 │  │
+    │  │  DELETE /api/products/<id>                 │  │
+    │  └────────────────────────────────────────────┘  │
+    │                                                  │
+    │  ┌────────────────────────────────────────────┐  │
+    │  │       Gestión del Carrito                  │  │
+    │  │  GET    /api/cart                          │  │
+    │  │  POST   /api/cart                          │  │
+    │  │  DELETE /api/cart/<id>                     │  │
+    │  │  POST   /api/cart/clear                    │  │
+    │  └────────────────────────────────────────────┘  │
+    │                                                  │
+    │  ┌────────────────────────────────────────────┐  │
+    │  │       Auditoría y Logs                     │  │
+    │  │  GET    /api/activity-log                  │  │
+    │  │  GET    /api/health                        │  │
+    │  └────────────────────────────────────────────┘  │
+    │                                                  │
+    └──────────────────────────────────────────────────┘
+                            ↕
+                   Consultas a Database
+                            ↕
+
+
+3️⃣  CAPA DE BASE DE DATOS
+═══════════════════════════════════════════════════════════════════════════════
+
+                    database.py (DatabaseManager)
+                          ↓
+                    sqlite3.connect()
+                          ↓
+                      inventory.db
+                   (Archivo local SQLite)
+    
+    ┌──────────────────────────────────────────────────┐
+    │              TABLAS SQLite                       │
+    │                                                  │
+    │  ┌─────────────────────────────────────────┐    │
+    │  │  users                                  │    │
+    │  │  ├─ id (INTEGER PRIMARY KEY)            │    │
+    │  │  ├─ username (TEXT UNIQUE)              │    │
+    │  │  ├─ password (TEXT)                     │    │
+    │  │  ├─ role (TEXT: owner, admin, buyer)    │    │
+    │  │  ├─ fullName (TEXT)                     │    │
+    │  │  └─ created_at (TIMESTAMP)              │    │
+    │  └─────────────────────────────────────────┘    │
+    │                                                  │
+    │  ┌─────────────────────────────────────────┐    │
+    │  │  products                               │    │
+    │  │  ├─ id (INTEGER PRIMARY KEY)            │    │
+    │  │  ├─ name (TEXT)                         │    │
+    │  │  ├─ description (TEXT)                  │    │
+    │  │  ├─ quantity (INTEGER)                  │    │
+    │  │  ├─ price (REAL)                        │    │
+    │  │  ├─ category (TEXT)                     │    │
+    │  │  ├─ created_at (TIMESTAMP)              │    │
+    │  │  └─ updated_at (TIMESTAMP)              │    │
+    │  └─────────────────────────────────────────┘    │
+    │                                                  │
+    │  ┌─────────────────────────────────────────┐    │
+    │  │  cart_items                             │    │
+    │  │  ├─ id (INTEGER PRIMARY KEY)            │    │
+    │  │  ├─ product_id (INTEGER FOREIGN KEY)    │    │
+    │  │  ├─ quantity (INTEGER)                  │    │
+    │  │  ├─ price (REAL)                        │    │
+    │  │  └─ created_at (TIMESTAMP)              │    │
+    │  └─────────────────────────────────────────┘    │
+    │                                                  │
+    │  ┌─────────────────────────────────────────┐    │
+    │  │  activity_log                           │    │
+    │  │  ├─ id (INTEGER PRIMARY KEY)            │    │
+    │  │  ├─ user_id (INTEGER FOREIGN KEY)       │    │
+    │  │  ├─ action (TEXT: login, create, etc)   │    │
+    │  │  ├─ details (TEXT)                      │    │
+    │  │  └─ created_at (TIMESTAMP)              │    │
+    │  └─────────────────────────────────────────┘    │
+    │                                                  │
+    └──────────────────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+                    FLUJO DE UNA SOLICITUD TÍPICA
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Usuario hace login en login.html
+                ↓
+JavaScript ejecuta handleLogin(username, password)
+                ↓
+api-client.js → fetch POST /api/login
+                ↓
+Flask recibe la solicitud en api.py
+                ↓
+api.py llama a database.login(username, password)
+                ↓
+database.py ejecuta: SELECT * FROM users WHERE username=? AND password=?
+                ↓
+SQLite retorna los datos del usuario (si existen)
+                ↓
+database.login() retorna usuario o None
+                ↓
+api.py crea sesión y retorna JSON: {success: true, user: {...}}
+                ↓
+api-client.js recibe respuesta y guarda usuario en localStorage
+                ↓
+Frontend redirige a index.html
+                ↓
+✅ Usuario autenticado y navegando
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+                    COMPARACIÓN: ANTES vs DESPUÉS
+
+═══════════════════════════════════════════════════════════════════════════════
+
+ANTES (localStorage):
+┌────────────────────────────────────────────────────────┐
+│  Datos guardados en:                                   │
+│  → localStorage del navegador                          │
+│                                                        │
+│  Problemas:                                            │
+│  ❌ No persistente (se pierde si limpias cache)        │
+│  ❌ No seguro (visible en JavaScript)                  │
+│  ❌ No compartido entre dispositivos                   │
+│  ❌ Sin auditoría                                      │
+│  ❌ Sin control de acceso en servidor                  │
+│  ❌ Pérdida total si elige "borrar datos"              │
+└────────────────────────────────────────────────────────┘
+
+DESPUÉS (Base de Datos):
+┌────────────────────────────────────────────────────────┐
+│  Datos guardados en:                                   │
+│  → Archivo SQLite en el servidor                       │
+│                                                        │
+│  Ventajas:                                             │
+│  ✅ Datos persistentes                                 │
+│  ✅ Seguro (validación en servidor)                    │
+│  ✅ Compartido entre dispositivos                      │
+│  ✅ Auditoría completa (activity_log)                  │
+│  ✅ Control de acceso por rol                          │
+│  ✅ Backup y recuperación posible                      │
+│  ✅ Escalable (fácil agregar usuarios)                 │
+└────────────────────────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+                    ROLES Y PERMISOS
+
+═══════════════════════════════════════════════════════════════════════════════
+
+┌──────────┬──────────────────────────────────────────────────────────────┐
+│ Rol      │ Permisos                                                     │
+├──────────┼──────────────────────────────────────────────────────────────┤
+│ owner    │ ✓ Ver inventario  ✓ Crear/editar/eliminar productos        │
+│          │ ✓ Ver reportes    ✓ Gestionar usuarios                      │
+│          │ ✓ Ver auditoría   ✓ Resetear datos                          │
+├──────────┼──────────────────────────────────────────────────────────────┤
+│ admin    │ ✓ Ver inventario  ✓ Crear/editar/eliminar productos        │
+│          │ ✓ Ver reportes    ✓ Gestionar usuarios                      │
+│          │ ✓ Ver auditoría                                             │
+├──────────┼──────────────────────────────────────────────────────────────┤
+│ tester   │ ✓ Ver inventario  ✓ Ver stock                               │
+├──────────┼──────────────────────────────────────────────────────────────┤
+│ tesorera │ ✓ Ver inventario  ✓ Ver precios  ✓ Ver reportes             │
+├──────────┼──────────────────────────────────────────────────────────────┤
+│ buyer    │ ✓ Ver inventario  ✓ Ver precios  ✓ Comprar (carrito)        │
+├──────────┼──────────────────────────────────────────────────────────────┤
+│ guest    │ ✓ Ver inventario  ✓ Ver precios  ✓ Navegar (sin login)      │
+└──────────┴──────────────────────────────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+                    TECNOLOGÍAS UTILIZADAS
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Frontend:
+  - HTML5                    (Estructura)
+  - CSS3                     (Estilos y animaciones)
+  - JavaScript (ES6+)        (Lógica del cliente)
+  - Fetch API                (Comunicación con API)
+
+Backend:
+  - Python 3.7+             (Lenguaje)
+  - Flask 3.0.0             (Framework web)
+  - Flask-CORS 4.0.0        (Comunicación entre dominios)
+  - Werkzeug 3.0.1          (WSGI utilities)
+
+Base de Datos:
+  - SQLite 3                (Motor de BD)
+  - Python sqlite3          (Driver)
+
+Otros:
+  - HTTP/REST               (Protocolo de comunicación)
+  - JSON                    (Formato de datos)
+  - Sessions/Cookies        (Autenticación)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+                    ESTRUCTURA DE CARPETAS
+
+═══════════════════════════════════════════════════════════════════════════════
+
+metodologia/
+│
+├── 📄 ARCHIVOS HTML (Interfaz)
+│   ├── login.html              (Página de login)
+│   ├── index.html              (Dashboard principal)
+│   ├── browse.html             (Catálogo de productos)
+│   ├── cart.html               (Carrito de compras)
+│   ├── user_management.html    (Gestión de usuarios)
+│   ├── config.html             (Configuración)
+│   └── ... (más páginas)
+│
+├── 🎨 ESTILOS
+│   └── styles.css              (Estilos globales)
+│
+├── 📜 SCRIPTS (Cliente)
+│   ├── api-client.js           (Cliente de API)
+│   └── app.js                  (Funciones legacy)
+│
+├── 🐍 SCRIPTS (Servidor)
+│   ├── api.py                  (Servidor Flask)
+│   ├── database.py             (Gestor de BD)
+│   ├── server.py               (Servidor web estático)
+│   └── startup.py              (Inicializador)
+│
+├── 🗄️ BASE DE DATOS
+│   └── inventory.db            (Archivo SQLite - se crea automáticamente)
+│
+├── 🔧 CONFIGURACIÓN
+│   ├── requirements.txt        (Dependencias Python)
+│   └── config.html             (Configuración web)
+│
+├── 📚 DOCUMENTACIÓN
+│   ├── DATABASE_SETUP.md       (Documentación técnica)
+│   ├── SETUP_GUIDE.txt         (Guía de instalación)
+│   ├── START_HERE_BD.md        (Inicio rápido)
+│   └── ARCHITECTURE.txt        (Este archivo)
+│
+└── 🚀 SCRIPTS DE INICIO
+    ├── start_api.bat           (Script Windows)
+    ├── start_api.ps1           (Script PowerShell)
+    └── test_system.py          (Script de pruebas)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+                    PRÓXIMAS MEJORAS RECOMENDADAS
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Corto Plazo:
+  [ ] Implementar JWT en lugar de sesiones
+  [ ] Agregar validación de datos (client + server)
+  [ ] Agregar cifrado de contraseñas (bcrypt)
+  [ ] Limitar intentos de login fallidos
+
+Mediano Plazo:
+  [ ] Implementar 2FA (autenticación de dos factores)
+  [ ] Agregar búsqueda y filtrado avanzado
+  [ ] Crear panel de estadísticas
+  [ ] Implementar paginación
+  [ ] Agregar exportación a CSV/PDF
+
+Largo Plazo:
+  [ ] Migrar a PostgreSQL para mayor escala
+  [ ] Implementar caché con Redis
+  [ ] Agregar API GraphQL
+  [ ] Crear aplicación móvil (React Native/Flutter)
+  [ ] Implementar CI/CD
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+¡Tu sistema está completamente documentado y listo para producción! 🎉
+
+═══════════════════════════════════════════════════════════════════════════════
